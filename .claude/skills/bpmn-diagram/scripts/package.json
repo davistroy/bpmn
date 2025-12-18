@@ -1,0 +1,24 @@
+{
+  "name": "bpmn-diagram-skill",
+  "version": "1.0.0",
+  "description": "Claude skill for rendering BPMN 2.0 diagrams to PNG images",
+  "main": "render-bpmn.js",
+  "scripts": {
+    "render": "node render-bpmn.js",
+    "test": "node render-bpmn.js ../assets/sample.bpmn ../assets/sample-output.png"
+  },
+  "keywords": [
+    "bpmn",
+    "diagram",
+    "png",
+    "render",
+    "claude-skill"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bpmn-js": "^17.11.0",
+    "jsdom": "^25.0.0",
+    "canvas": "^2.11.2"
+  }
+}
