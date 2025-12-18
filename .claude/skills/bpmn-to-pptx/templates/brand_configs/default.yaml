@@ -1,0 +1,60 @@
+# Default Brand Configuration for BPMN to PowerPoint Skill
+# Clean, professional styling suitable for most presentations
+
+brand:
+  name: Default
+
+colors:
+  # Primary palette
+  primary: "1A365D"      # Deep navy - main headers
+  secondary: "2B6CB0"    # Medium blue - secondary elements
+  accent: "ED8936"       # Orange - highlights and emphasis
+  background: "FFFFFF"   # White background
+  
+  # Text colors
+  text_primary: "1A202C"   # Near-black for main text
+  text_secondary: "4A5568" # Gray for secondary text
+  
+  # Process element colors
+  task_fill: "EBF8FF"       # Light blue
+  task_border: "3182CE"     # Blue
+  decision_fill: "FEFCBF"   # Light yellow
+  decision_border: "D69E2E" # Gold
+  parallel_fill: "E9D8FD"   # Light purple
+  parallel_border: "805AD5" # Purple
+  start_fill: "C6F6D5"      # Light green
+  start_border: "38A169"    # Green
+  end_fill: "FED7D7"        # Light red
+  end_border: "E53E3E"      # Red
+  subprocess_fill: "F7FAFC" # Light gray
+  subprocess_border: "718096" # Gray
+  merge_fill: "E2E8F0"      # Light gray
+  merge_border: "718096"    # Gray
+
+fonts:
+  title: "Calibri Light"
+  heading: "Calibri"
+  body: "Calibri"
+  sizes:
+    slide_title: 28
+    action_title: 16
+    phase_label: 14
+    shape_text: 10
+    footnote: 8
+
+layout:
+  # Slide dimensions (16:9)
+  slide_width: 13.333
+  slide_height: 7.5
+  
+  # Margins (inches)
+  margin_left: 0.5
+  margin_right: 0.5
+  margin_top: 0.75
+  margin_bottom: 0.5
+  
+  # Shape dimensions (inches)
+  shape_width: 1.4
+  shape_height: 0.6
+  shape_gap_h: 0.3
+  shape_gap_v: 0.7

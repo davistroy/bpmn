@@ -4,12 +4,13 @@ A collection of Claude Code skills for working with Business Process Model and N
 
 ## Overview
 
-This project provides two complementary skills that work together to create a complete BPMN workflow:
+This project provides skills that work together to create a complete BPMN workflow:
 
 | Skill | Purpose | Input | Output |
 |-------|---------|-------|--------|
 | **bpmn-xml-generator** | Generate BPMN XML from process descriptions | Natural language | BPMN 2.0 XML file |
 | **bpmn-diagram** | Render BPMN diagrams as images | BPMN 2.0 XML | PNG image |
+| **bpmn-to-pptx** | Convert BPMN to PowerPoint presentations | BPMN 2.0 XML | PowerPoint (.pptx) |
 
 ### Typical Workflow
 
@@ -73,6 +74,50 @@ User: Render the onboarding.bpmn file as a diagram
 User: Create a PNG from this BPMN XML: [XML content]
 User: Visualize the process diagram
 ```
+
+### 3. BPMN to PowerPoint Generator
+
+Transforms BPMN 2.0 process diagrams into professional, editable PowerPoint presentations following McKinsey/BCG consulting standards. Automatically manages complexity by chunking processes into hierarchical slide structures with 8-10 steps per slide.
+
+**Features:**
+- McKinsey-style action titles (complete sentences stating the "so what")
+- Automatic process chunking (8-10 steps per slide based on cognitive load research)
+- Hierarchical structure: overview slide with phases, then detailed phase slides
+- Consistent color coding for BPMN element types
+- Customizable brand configurations
+- 20-25% whitespace for stakeholder annotations
+
+**Trigger phrases:**
+- "Convert this BPMN to PowerPoint"
+- "Create a presentation from process.bpmn"
+- "Generate slides for this workflow"
+- "Make a stakeholder deck from this process"
+
+**Example:**
+```
+User: Convert onboarding-process.bpmn to a PowerPoint presentation
+
+Claude: [Parses BPMN, chunks into phases, generates multi-slide deck with:
+        - Title slide
+        - Overview slide (chevron diagram)
+        - Phase detail slides (8-10 steps each)]
+```
+
+**Output Structure:**
+1. **Title Slide** - Process name and metadata
+2. **Overview Slide** - Phase-level chevron diagram (max 7 phases)
+3. **Phase Detail Slides** - One per phase with full process flow
+4. **Decision Summary** - (Optional) Key decision points listed
+
+**Supported BPMN Elements:**
+| Element | PowerPoint Shape | Color |
+|---------|------------------|-------|
+| Start Event | Green oval | #C6F6D5 |
+| End Event | Red oval | #FED7D7 |
+| User Task | Rounded rectangle | #EBF8FF (blue) |
+| Service Task | Rounded rectangle | #E9D8FD (purple) |
+| Exclusive Gateway | Diamond | #FEFCBF (yellow) |
+| Parallel Gateway | Diamond with + | #E9D8FD (purple) |
 
 ## Installation
 
@@ -204,20 +249,34 @@ Both skills support the full BPMN 2.0 specification:
 │   └── assets/
 │       └── sample.bpmn              # Sample BPMN file
 │
-└── bpmn-xml-generator/              # XML generation skill
+├── bpmn-xml-generator/              # XML generation skill
+│   ├── SKILL.md                     # Skill definition
+│   ├── templates/
+│   │   ├── bpmn-skeleton.xml        # Base XML structure
+│   │   └── element-templates.xml    # Element snippets
+│   ├── examples/
+│   │   ├── simple-approval.bpmn     # Simple approval workflow
+│   │   ├── complex-order-process.bpmn
+│   │   ├── parallel-processing.bpmn
+│   │   └── subprocess-example.bpmn
+│   └── references/
+│       ├── bpmn-elements-reference.md
+│       ├── clarification-patterns.md
+│       └── xml-namespaces.md
+│
+└── bpmn-to-pptx/                    # PowerPoint generation skill
     ├── SKILL.md                     # Skill definition
+    ├── src/
+    │   ├── bpmn_parser.py           # BPMN XML parsing
+    │   ├── process_model.py         # Data structures
+    │   ├── hierarchy_builder.py     # Phase detection & chunking
+    │   ├── slide_generator.py       # Main orchestration
+    │   ├── html_templates.py        # HTML slide templates
+    │   └── brand_config.py          # Brand configuration loader
     ├── templates/
-    │   ├── bpmn-skeleton.xml        # Base XML structure
-    │   └── element-templates.xml    # Element snippets
-    ├── examples/
-    │   ├── simple-approval.bpmn     # Simple approval workflow
-    │   ├── complex-order-process.bpmn
-    │   ├── parallel-processing.bpmn
-    │   └── subprocess-example.bpmn
-    └── references/
-        ├── bpmn-elements-reference.md
-        ├── clarification-patterns.md
-        └── xml-namespaces.md
+    │   └── brand_configs/           # Brand configuration files
+    └── examples/
+        └── rochester-2g-rebuild.bpmn
 ```
 
 ## Examples
@@ -289,6 +348,13 @@ For production use with complex diagrams, consider using `bpmn-to-image` with Pu
 
 - Requires user interaction for complex processes (clarifying questions)
 - Generated layouts are optimized for readability but may need manual adjustment for very complex processes
+
+### PowerPoint Generator
+
+- Maximum 50 elements recommended (larger processes should be decomposed)
+- Swimlanes not yet supported (single-lane horizontal flow only)
+- Collapsed subprocesses shown as single shape (not expanded)
+- Complex nested gateways may require manual adjustment
 
 ## Resources
 

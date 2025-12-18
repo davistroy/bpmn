@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions
+    xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+    xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+    xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+    xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    id="Definitions_Rochester2GCarburetorRebuild"
+    targetNamespace="http://bpmn.io/schema/bpmn"
+    exporter="Claude BPMN Generator"
+    exporterVersion="1.0">
+
+  <bpmn:process id="Process_Rochester2GCarburetorRebuild" name="Rochester 2G Carburetor Rebuild" isExecutable="true">
+
+    <!-- Start Event -->
+    <bpmn:startEvent id="StartEvent_1" name="Initiate Rebuild">
+      <bpmn:outgoing>Flow_Start_Prep</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <!-- Phase 1: Preparation and Disassembly -->
+    <bpmn:userTask id="Activity_TakePhotos" name="Take Reference Photos">
+      <bpmn:incoming>Flow_Start_Prep</bpmn:incoming>
+      <bpmn:outgoing>Flow_Photos_Mount</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_MountCarburetor" name="Mount on Holding Fixture">
+      <bpmn:incoming>Flow_Photos_Mount</bpmn:incoming>
+      <bpmn:outgoing>Flow_Mount_RemoveExternal</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_RemoveExternalComponents" name="Remove External Components">
+      <bpmn:incoming>Flow_Mount_RemoveExternal</bpmn:incoming>
+      <bpmn:outgoing>Flow_External_ChokeGateway</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Gateway: Choke Housing Location -->
+    <bpmn:exclusiveGateway id="Gateway_ChokeLocation" name="Choke Housing Location?" default="Flow_ChokeAirHorn">
+      <bpmn:incoming>Flow_External_ChokeGateway</bpmn:incoming>
+      <bpmn:outgoing>Flow_ChokeAirHorn</bpmn:outgoing>
+      <bpmn:outgoing>Flow_ChokeThrottleBody</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Activity_RemoveChokeAirHorn" name="Remove Choke from Air Horn">
+      <bpmn:incoming>Flow_ChokeAirHorn</bpmn:incoming>
+      <bpmn:outgoing>Flow_ChokeAH_Merge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_RemoveChokeThrottleBody" name="Remove Choke Rod from Throttle Body">
+      <bpmn:incoming>Flow_ChokeThrottleBody</bpmn:incoming>
+      <bpmn:outgoing>Flow_ChokeTB_Merge</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="Gateway_ChokeMerge" name="Merge Choke Paths">
+      <bpmn:incoming>Flow_ChokeAH_Merge</bpmn:incoming>
+      <bpmn:incoming>Flow_ChokeTB_Merge</bpmn:incoming>
+      <bpmn:outgoing>Flow_ChokeMerge_AirHorn</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="Activity_RemoveAirHorn" name="Remove Air Horn Assembly">
+      <bpmn:incoming>Flow_ChokeMerge_AirHorn</bpmn:incoming>
+      <bpmn:outgoing>Flow_AirHorn_Internal</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_DisassembleAirHornInternal" name="Disassemble Air Horn Internals">
+      <bpmn:incoming>Flow_AirHorn_Internal</bpmn:incoming>
+      <bpmn:outgoing>Flow_Internal_FloatBowl</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_DisassembleFloatBowl" name="Disassemble Float Bowl">
+      <bpmn:incoming>Flow_Internal_FloatBowl</bpmn:incoming>
+      <bpmn:outgoing>Flow_FloatBowl_ThrottleBody</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_DisassembleThrottleBody" name="Disassemble Throttle Body">
+      <bpmn:incoming>Flow_FloatBowl_ThrottleBody</bpmn:incoming>
+      <bpmn:outgoing>Flow_ThrottleBody_CleaningSplit</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Phase 2: Cleaning with Parallel Gateway -->
+    <bpmn:parallelGateway id="Gateway_CleaningSplit" name="Split for Parallel Cleaning">
+      <bpmn:incoming>Flow_ThrottleBody_CleaningSplit</bpmn:incoming>
+      <bpmn:outgoing>Flow_CleanMetal</bpmn:outgoing>
+      <bpmn:outgoing>Flow_CleanNonMetal</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="Activity_CleanMetalParts" name="Clean Metal Parts in Solvent">
+      <bpmn:incoming>Flow_CleanMetal</bpmn:incoming>
+      <bpmn:outgoing>Flow_MetalDone</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_CleanNonMetalParts" name="Clean Non-Metal Parts Separately">
+      <bpmn:incoming>Flow_CleanNonMetal</bpmn:incoming>
+      <bpmn:outgoing>Flow_NonMetalDone</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:parallelGateway id="Gateway_CleaningMerge" name="Merge Cleaning Paths">
+      <bpmn:incoming>Flow_MetalDone</bpmn:incoming>
+      <bpmn:incoming>Flow_NonMetalDone</bpmn:incoming>
+      <bpmn:outgoing>Flow_CleaningMerge_Passages</bpmn:outgoing>
+    </bpmn:parallelGateway>
+
+    <bpmn:userTask id="Activity_BlowOutPassages" name="Blow Out All Passages">
+      <bpmn:incoming>Flow_CleaningMerge_Passages</bpmn:incoming>
+      <bpmn:outgoing>Flow_Passages_Inspection</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Phase 3: Inspection (collapsed subprocess) -->
+    <bpmn:subProcess id="SubProcess_Inspection" name="12-Point Inspection">
+      <bpmn:incoming>Flow_Passages_Inspection</bpmn:incoming>
+      <bpmn:outgoing>Flow_Inspection_PassFail</bpmn:outgoing>
+    </bpmn:subProcess>
+
+    <!-- Gateway: Inspection Pass/Fail -->
+    <bpmn:exclusiveGateway id="Gateway_InspectionResult" name="Parts Pass Inspection?" default="Flow_InspectionPass">
+      <bpmn:incoming>Flow_Inspection_PassFail</bpmn:incoming>
+      <bpmn:outgoing>Flow_InspectionPass</bpmn:outgoing>
+      <bpmn:outgoing>Flow_InspectionFail</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:endEvent id="EndEvent_PartsReplacement" name="Parts Replacement Needed">
+      <bpmn:incoming>Flow_InspectionFail</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Phase 4: Assembly -->
+    <bpmn:userTask id="Activity_AssembleThrottleBody" name="Assemble Throttle Body">
+      <bpmn:incoming>Flow_InspectionPass</bpmn:incoming>
+      <bpmn:outgoing>Flow_TB_FloatBowl</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_AssembleFloatBowl" name="Assemble Float Bowl">
+      <bpmn:incoming>Flow_TB_FloatBowl</bpmn:incoming>
+      <bpmn:outgoing>Flow_FloatBowl_AirHornAssy</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_AssembleAirHorn" name="Assemble Air Horn">
+      <bpmn:incoming>Flow_FloatBowl_AirHornAssy</bpmn:incoming>
+      <bpmn:outgoing>Flow_AirHorn_Final</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_FinalAssembly" name="Final Carburetor Assembly">
+      <bpmn:incoming>Flow_AirHorn_Final</bpmn:incoming>
+      <bpmn:outgoing>Flow_Final_Adjustments</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- Phase 5: Adjustments -->
+    <bpmn:userTask id="Activity_AdjustFloatLevel" name="Adjust Float Level">
+      <bpmn:incoming>Flow_Final_Adjustments</bpmn:incoming>
+      <bpmn:outgoing>Flow_Float_FloatDrop</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_AdjustFloatDrop" name="Adjust Float Drop">
+      <bpmn:incoming>Flow_Float_FloatDrop</bpmn:incoming>
+      <bpmn:outgoing>Flow_FloatDrop_PumpRod</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_AdjustPumpRod" name="Adjust Pump Rod">
+      <bpmn:incoming>Flow_FloatDrop_PumpRod</bpmn:incoming>
+      <bpmn:outgoing>Flow_PumpRod_Choke</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_AdjustChoke" name="Adjust Choke Settings">
+      <bpmn:incoming>Flow_PumpRod_Choke</bpmn:incoming>
+      <bpmn:outgoing>Flow_Choke_Idle</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <bpmn:userTask id="Activity_SetIdleMixture" name="Set Preliminary Idle Mixture">
+      <bpmn:incoming>Flow_Choke_Idle</bpmn:incoming>
+      <bpmn:outgoing>Flow_Idle_End</bpmn:outgoing>
+    </bpmn:userTask>
+
+    <!-- End Event: Success -->
+    <bpmn:endEvent id="EndEvent_RebuildComplete" name="Rebuild Complete">
+      <bpmn:incoming>Flow_Idle_End</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="Flow_Start_Prep" sourceRef="StartEvent_1" targetRef="Activity_TakePhotos"/>
+    <bpmn:sequenceFlow id="Flow_Photos_Mount" sourceRef="Activity_TakePhotos" targetRef="Activity_MountCarburetor"/>
+    <bpmn:sequenceFlow id="Flow_Mount_RemoveExternal" sourceRef="Activity_MountCarburetor" targetRef="Activity_RemoveExternalComponents"/>
+    <bpmn:sequenceFlow id="Flow_External_ChokeGateway" sourceRef="Activity_RemoveExternalComponents" targetRef="Gateway_ChokeLocation"/>
+
+    <bpmn:sequenceFlow id="Flow_ChokeAirHorn" name="On Air Horn" sourceRef="Gateway_ChokeLocation" targetRef="Activity_RemoveChokeAirHorn"/>
+    <bpmn:sequenceFlow id="Flow_ChokeThrottleBody" name="On Throttle Body" sourceRef="Gateway_ChokeLocation" targetRef="Activity_RemoveChokeThrottleBody">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${chokeLocation == 'throttleBody'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_ChokeAH_Merge" sourceRef="Activity_RemoveChokeAirHorn" targetRef="Gateway_ChokeMerge"/>
+    <bpmn:sequenceFlow id="Flow_ChokeTB_Merge" sourceRef="Activity_RemoveChokeThrottleBody" targetRef="Gateway_ChokeMerge"/>
+    <bpmn:sequenceFlow id="Flow_ChokeMerge_AirHorn" sourceRef="Gateway_ChokeMerge" targetRef="Activity_RemoveAirHorn"/>
+
+    <bpmn:sequenceFlow id="Flow_AirHorn_Internal" sourceRef="Activity_RemoveAirHorn" targetRef="Activity_DisassembleAirHornInternal"/>
+    <bpmn:sequenceFlow id="Flow_Internal_FloatBowl" sourceRef="Activity_DisassembleAirHornInternal" targetRef="Activity_DisassembleFloatBowl"/>
+    <bpmn:sequenceFlow id="Flow_FloatBowl_ThrottleBody" sourceRef="Activity_DisassembleFloatBowl" targetRef="Activity_DisassembleThrottleBody"/>
+    <bpmn:sequenceFlow id="Flow_ThrottleBody_CleaningSplit" sourceRef="Activity_DisassembleThrottleBody" targetRef="Gateway_CleaningSplit"/>
+
+    <bpmn:sequenceFlow id="Flow_CleanMetal" sourceRef="Gateway_CleaningSplit" targetRef="Activity_CleanMetalParts"/>
+    <bpmn:sequenceFlow id="Flow_CleanNonMetal" sourceRef="Gateway_CleaningSplit" targetRef="Activity_CleanNonMetalParts"/>
+    <bpmn:sequenceFlow id="Flow_MetalDone" sourceRef="Activity_CleanMetalParts" targetRef="Gateway_CleaningMerge"/>
+    <bpmn:sequenceFlow id="Flow_NonMetalDone" sourceRef="Activity_CleanNonMetalParts" targetRef="Gateway_CleaningMerge"/>
+    <bpmn:sequenceFlow id="Flow_CleaningMerge_Passages" sourceRef="Gateway_CleaningMerge" targetRef="Activity_BlowOutPassages"/>
+
+    <bpmn:sequenceFlow id="Flow_Passages_Inspection" sourceRef="Activity_BlowOutPassages" targetRef="SubProcess_Inspection"/>
+    <bpmn:sequenceFlow id="Flow_Inspection_PassFail" sourceRef="SubProcess_Inspection" targetRef="Gateway_InspectionResult"/>
+
+    <bpmn:sequenceFlow id="Flow_InspectionPass" name="Pass" sourceRef="Gateway_InspectionResult" targetRef="Activity_AssembleThrottleBody"/>
+    <bpmn:sequenceFlow id="Flow_InspectionFail" name="Fail - Parts Worn" sourceRef="Gateway_InspectionResult" targetRef="EndEvent_PartsReplacement">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${inspectionResult == 'fail'}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+
+    <bpmn:sequenceFlow id="Flow_TB_FloatBowl" sourceRef="Activity_AssembleThrottleBody" targetRef="Activity_AssembleFloatBowl"/>
+    <bpmn:sequenceFlow id="Flow_FloatBowl_AirHornAssy" sourceRef="Activity_AssembleFloatBowl" targetRef="Activity_AssembleAirHorn"/>
+    <bpmn:sequenceFlow id="Flow_AirHorn_Final" sourceRef="Activity_AssembleAirHorn" targetRef="Activity_FinalAssembly"/>
+    <bpmn:sequenceFlow id="Flow_Final_Adjustments" sourceRef="Activity_FinalAssembly" targetRef="Activity_AdjustFloatLevel"/>
+
+    <bpmn:sequenceFlow id="Flow_Float_FloatDrop" sourceRef="Activity_AdjustFloatLevel" targetRef="Activity_AdjustFloatDrop"/>
+    <bpmn:sequenceFlow id="Flow_FloatDrop_PumpRod" sourceRef="Activity_AdjustFloatDrop" targetRef="Activity_AdjustPumpRod"/>
+    <bpmn:sequenceFlow id="Flow_PumpRod_Choke" sourceRef="Activity_AdjustPumpRod" targetRef="Activity_AdjustChoke"/>
+    <bpmn:sequenceFlow id="Flow_Choke_Idle" sourceRef="Activity_AdjustChoke" targetRef="Activity_SetIdleMixture"/>
+    <bpmn:sequenceFlow id="Flow_Idle_End" sourceRef="Activity_SetIdleMixture" targetRef="EndEvent_RebuildComplete"/>
+
+  </bpmn:process>
+
+  <!-- Diagram Interchange -->
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_Rochester2GCarburetorRebuild">
+
+      <!-- Start Event -->
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="180" y="222" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="162" y="265" width="73" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 1: Preparation Tasks -->
+      <bpmndi:BPMNShape id="Activity_TakePhotos_di" bpmnElement="Activity_TakePhotos">
+        <dc:Bounds x="270" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_MountCarburetor_di" bpmnElement="Activity_MountCarburetor">
+        <dc:Bounds x="420" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_RemoveExternalComponents_di" bpmnElement="Activity_RemoveExternalComponents">
+        <dc:Bounds x="570" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Choke Location Gateway -->
+      <bpmndi:BPMNShape id="Gateway_ChokeLocation_di" bpmnElement="Gateway_ChokeLocation" isMarkerVisible="true">
+        <dc:Bounds x="720" y="215" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="185" width="90" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_RemoveChokeAirHorn_di" bpmnElement="Activity_RemoveChokeAirHorn">
+        <dc:Bounds x="820" y="140" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_RemoveChokeThrottleBody_di" bpmnElement="Activity_RemoveChokeThrottleBody">
+        <dc:Bounds x="820" y="270" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Choke Merge Gateway -->
+      <bpmndi:BPMNShape id="Gateway_ChokeMerge_di" bpmnElement="Gateway_ChokeMerge" isMarkerVisible="true">
+        <dc:Bounds x="970" y="215" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Disassembly Tasks -->
+      <bpmndi:BPMNShape id="Activity_RemoveAirHorn_di" bpmnElement="Activity_RemoveAirHorn">
+        <dc:Bounds x="1070" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_DisassembleAirHornInternal_di" bpmnElement="Activity_DisassembleAirHornInternal">
+        <dc:Bounds x="1220" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_DisassembleFloatBowl_di" bpmnElement="Activity_DisassembleFloatBowl">
+        <dc:Bounds x="1370" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_DisassembleThrottleBody_di" bpmnElement="Activity_DisassembleThrottleBody">
+        <dc:Bounds x="1520" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 2: Cleaning - Parallel Gateway Split -->
+      <bpmndi:BPMNShape id="Gateway_CleaningSplit_di" bpmnElement="Gateway_CleaningSplit">
+        <dc:Bounds x="1670" y="215" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1655" y="185" width="80" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_CleanMetalParts_di" bpmnElement="Activity_CleanMetalParts">
+        <dc:Bounds x="1770" y="140" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_CleanNonMetalParts_di" bpmnElement="Activity_CleanNonMetalParts">
+        <dc:Bounds x="1770" y="270" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Cleaning Merge Gateway -->
+      <bpmndi:BPMNShape id="Gateway_CleaningMerge_di" bpmnElement="Gateway_CleaningMerge">
+        <dc:Bounds x="1920" y="215" width="50" height="50"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_BlowOutPassages_di" bpmnElement="Activity_BlowOutPassages">
+        <dc:Bounds x="2020" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 3: Inspection Subprocess -->
+      <bpmndi:BPMNShape id="SubProcess_Inspection_di" bpmnElement="SubProcess_Inspection" isExpanded="false">
+        <dc:Bounds x="2170" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Inspection Result Gateway -->
+      <bpmndi:BPMNShape id="Gateway_InspectionResult_di" bpmnElement="Gateway_InspectionResult" isMarkerVisible="true">
+        <dc:Bounds x="2320" y="215" width="50" height="50"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2305" y="178" width="80" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Parts Replacement End Event -->
+      <bpmndi:BPMNShape id="EndEvent_PartsReplacement_di" bpmnElement="EndEvent_PartsReplacement">
+        <dc:Bounds x="2327" y="322" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2301" y="365" width="88" height="27"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 4: Assembly Tasks -->
+      <bpmndi:BPMNShape id="Activity_AssembleThrottleBody_di" bpmnElement="Activity_AssembleThrottleBody">
+        <dc:Bounds x="2420" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_AssembleFloatBowl_di" bpmnElement="Activity_AssembleFloatBowl">
+        <dc:Bounds x="2570" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_AssembleAirHorn_di" bpmnElement="Activity_AssembleAirHorn">
+        <dc:Bounds x="2720" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_FinalAssembly_di" bpmnElement="Activity_FinalAssembly">
+        <dc:Bounds x="2870" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- Phase 5: Adjustment Tasks -->
+      <bpmndi:BPMNShape id="Activity_AdjustFloatLevel_di" bpmnElement="Activity_AdjustFloatLevel">
+        <dc:Bounds x="3020" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_AdjustFloatDrop_di" bpmnElement="Activity_AdjustFloatDrop">
+        <dc:Bounds x="3170" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_AdjustPumpRod_di" bpmnElement="Activity_AdjustPumpRod">
+        <dc:Bounds x="3320" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_AdjustChoke_di" bpmnElement="Activity_AdjustChoke">
+        <dc:Bounds x="3470" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Activity_SetIdleMixture_di" bpmnElement="Activity_SetIdleMixture">
+        <dc:Bounds x="3620" y="200" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+
+      <!-- End Event: Rebuild Complete -->
+      <bpmndi:BPMNShape id="EndEvent_RebuildComplete_di" bpmnElement="EndEvent_RebuildComplete">
+        <dc:Bounds x="3772" y="222" width="36" height="36"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="3748" y="265" width="84" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flow Edges -->
+      <bpmndi:BPMNEdge id="Flow_Start_Prep_di" bpmnElement="Flow_Start_Prep">
+        <di:waypoint x="216" y="240"/>
+        <di:waypoint x="270" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Photos_Mount_di" bpmnElement="Flow_Photos_Mount">
+        <di:waypoint x="370" y="240"/>
+        <di:waypoint x="420" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Mount_RemoveExternal_di" bpmnElement="Flow_Mount_RemoveExternal">
+        <di:waypoint x="520" y="240"/>
+        <di:waypoint x="570" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_External_ChokeGateway_di" bpmnElement="Flow_External_ChokeGateway">
+        <di:waypoint x="670" y="240"/>
+        <di:waypoint x="720" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ChokeAirHorn_di" bpmnElement="Flow_ChokeAirHorn">
+        <di:waypoint x="745" y="215"/>
+        <di:waypoint x="745" y="180"/>
+        <di:waypoint x="820" y="180"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="755" y="163" width="60" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ChokeThrottleBody_di" bpmnElement="Flow_ChokeThrottleBody">
+        <di:waypoint x="745" y="265"/>
+        <di:waypoint x="745" y="310"/>
+        <di:waypoint x="820" y="310"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="735" y="318" width="86" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ChokeAH_Merge_di" bpmnElement="Flow_ChokeAH_Merge">
+        <di:waypoint x="920" y="180"/>
+        <di:waypoint x="995" y="180"/>
+        <di:waypoint x="995" y="215"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ChokeTB_Merge_di" bpmnElement="Flow_ChokeTB_Merge">
+        <di:waypoint x="920" y="310"/>
+        <di:waypoint x="995" y="310"/>
+        <di:waypoint x="995" y="265"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ChokeMerge_AirHorn_di" bpmnElement="Flow_ChokeMerge_AirHorn">
+        <di:waypoint x="1020" y="240"/>
+        <di:waypoint x="1070" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_AirHorn_Internal_di" bpmnElement="Flow_AirHorn_Internal">
+        <di:waypoint x="1170" y="240"/>
+        <di:waypoint x="1220" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Internal_FloatBowl_di" bpmnElement="Flow_Internal_FloatBowl">
+        <di:waypoint x="1320" y="240"/>
+        <di:waypoint x="1370" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_FloatBowl_ThrottleBody_di" bpmnElement="Flow_FloatBowl_ThrottleBody">
+        <di:waypoint x="1470" y="240"/>
+        <di:waypoint x="1520" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_ThrottleBody_CleaningSplit_di" bpmnElement="Flow_ThrottleBody_CleaningSplit">
+        <di:waypoint x="1620" y="240"/>
+        <di:waypoint x="1670" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_CleanMetal_di" bpmnElement="Flow_CleanMetal">
+        <di:waypoint x="1695" y="215"/>
+        <di:waypoint x="1695" y="180"/>
+        <di:waypoint x="1770" y="180"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_CleanNonMetal_di" bpmnElement="Flow_CleanNonMetal">
+        <di:waypoint x="1695" y="265"/>
+        <di:waypoint x="1695" y="310"/>
+        <di:waypoint x="1770" y="310"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_MetalDone_di" bpmnElement="Flow_MetalDone">
+        <di:waypoint x="1870" y="180"/>
+        <di:waypoint x="1945" y="180"/>
+        <di:waypoint x="1945" y="215"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_NonMetalDone_di" bpmnElement="Flow_NonMetalDone">
+        <di:waypoint x="1870" y="310"/>
+        <di:waypoint x="1945" y="310"/>
+        <di:waypoint x="1945" y="265"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_CleaningMerge_Passages_di" bpmnElement="Flow_CleaningMerge_Passages">
+        <di:waypoint x="1970" y="240"/>
+        <di:waypoint x="2020" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Passages_Inspection_di" bpmnElement="Flow_Passages_Inspection">
+        <di:waypoint x="2120" y="240"/>
+        <di:waypoint x="2170" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Inspection_PassFail_di" bpmnElement="Flow_Inspection_PassFail">
+        <di:waypoint x="2270" y="240"/>
+        <di:waypoint x="2320" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_InspectionPass_di" bpmnElement="Flow_InspectionPass">
+        <di:waypoint x="2370" y="240"/>
+        <di:waypoint x="2420" y="240"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2385" y="222" width="24" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_InspectionFail_di" bpmnElement="Flow_InspectionFail">
+        <di:waypoint x="2345" y="265"/>
+        <di:waypoint x="2345" y="322"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2352" y="283" width="85" height="14"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_TB_FloatBowl_di" bpmnElement="Flow_TB_FloatBowl">
+        <di:waypoint x="2520" y="240"/>
+        <di:waypoint x="2570" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_FloatBowl_AirHornAssy_di" bpmnElement="Flow_FloatBowl_AirHornAssy">
+        <di:waypoint x="2670" y="240"/>
+        <di:waypoint x="2720" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_AirHorn_Final_di" bpmnElement="Flow_AirHorn_Final">
+        <di:waypoint x="2820" y="240"/>
+        <di:waypoint x="2870" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Final_Adjustments_di" bpmnElement="Flow_Final_Adjustments">
+        <di:waypoint x="2970" y="240"/>
+        <di:waypoint x="3020" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Float_FloatDrop_di" bpmnElement="Flow_Float_FloatDrop">
+        <di:waypoint x="3120" y="240"/>
+        <di:waypoint x="3170" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_FloatDrop_PumpRod_di" bpmnElement="Flow_FloatDrop_PumpRod">
+        <di:waypoint x="3270" y="240"/>
+        <di:waypoint x="3320" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_PumpRod_Choke_di" bpmnElement="Flow_PumpRod_Choke">
+        <di:waypoint x="3420" y="240"/>
+        <di:waypoint x="3470" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Choke_Idle_di" bpmnElement="Flow_Choke_Idle">
+        <di:waypoint x="3570" y="240"/>
+        <di:waypoint x="3620" y="240"/>
+      </bpmndi:BPMNEdge>
+
+      <bpmndi:BPMNEdge id="Flow_Idle_End_di" bpmnElement="Flow_Idle_End">
+        <di:waypoint x="3720" y="240"/>
+        <di:waypoint x="3772" y="240"/>
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

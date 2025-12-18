@@ -1,0 +1,67 @@
+# Stratfield Consulting Brand Configuration
+# Professional consulting firm styling with navy and gold accents
+
+brand:
+  name: Stratfield Consulting
+
+colors:
+  # Primary palette - Navy and Gold
+  primary: "0D2137"      # Deep navy - corporate headers
+  secondary: "1E4976"    # Medium navy - secondary elements
+  accent: "D4A84B"       # Gold - premium highlights
+  background: "FFFFFF"   # Clean white background
+  
+  # Text colors
+  text_primary: "1A202C"   # Near-black for readability
+  text_secondary: "4A5568" # Professional gray
+  
+  # Process element colors - Coordinated with brand
+  task_fill: "E8F4FC"       # Light navy tint
+  task_border: "1E4976"     # Navy
+  decision_fill: "FDF6E3"   # Light gold
+  decision_border: "D4A84B" # Gold
+  parallel_fill: "F0E6F6"   # Light purple (workflow)
+  parallel_border: "6B4C7A" # Purple
+  start_fill: "D4EDDA"      # Success green
+  start_border: "28A745"    # Green
+  end_fill: "F8D7DA"        # Completion red
+  end_border: "DC3545"      # Red
+  subprocess_fill: "F8F9FA" # Subtle gray
+  subprocess_border: "6C757D" # Medium gray
+  merge_fill: "E9ECEF"      # Light gray
+  merge_border: "6C757D"    # Medium gray
+
+fonts:
+  # Professional font stack
+  title: "Calibri Light"
+  heading: "Calibri"
+  body: "Calibri"
+  sizes:
+    slide_title: 28
+    action_title: 16
+    phase_label: 14
+    shape_text: 10
+    footnote: 8
+
+layout:
+  # Slide dimensions (16:9)
+  slide_width: 13.333
+  slide_height: 7.5
+  
+  # Margins (inches) - slightly wider for elegance
+  margin_left: 0.6
+  margin_right: 0.6
+  margin_top: 0.75
+  margin_bottom: 0.5
+  
+  # Shape dimensions (inches)
+  shape_width: 1.4
+  shape_height: 0.6
+  shape_gap_h: 0.35
+  shape_gap_v: 0.7
+
+# Optional logo configuration
+# logo:
+#   path: "templates/logos/stratfield_logo.png"
+#   width: 1.5
+#   position: "top_right"
