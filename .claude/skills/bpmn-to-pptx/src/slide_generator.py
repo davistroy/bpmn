@@ -168,33 +168,34 @@ class ProcessPresentationGenerator:
     def _generate_slide_content(self, process: ProcessModel) -> List[SlideContent]:
         """Generate the content structure for all slides."""
         slides = []
-        
+
         # 1. Title slide
         slides.append(SlideContent(
             slide_type="title",
             title=process.name,
             action_title=f"Process Documentation • {process.task_count} Steps • {len(process.phases)} Phases"
         ))
-        
+
         # 2. Overview slide (if enabled)
+        phases_summary = [
+            (phase.name, len(phase.element_ids))
+            for phase in process.phases
+        ]
+
         if self.include_overview and process.phases:
-            phases_summary = [
-                (phase.name, len(phase.element_ids)) 
-                for phase in process.phases
-            ]
             slides.append(SlideContent(
                 slide_type="overview",
                 title="Process Overview",
                 action_title=self.title_generator.generate_overview_title(process),
                 phases_summary=phases_summary[:7]  # Max 7 phases on overview
             ))
-        
+
         # 3. Phase detail slides
         total_phases = len(process.phases)
         for i, phase in enumerate(process.phases, 1):
             elements = process.get_elements_in_phase(phase.id)
             flows = self._get_flows_for_elements(process, [e.id for e in elements])
-            
+
             slides.append(SlideContent(
                 slide_type="phase_detail",
                 title=phase.name,
@@ -206,7 +207,8 @@ class ProcessPresentationGenerator:
                 phase=phase,
                 phase_number=i,
                 total_phases=total_phases,
-                overview_link=self.include_overview
+                overview_link=self.include_overview,
+                phases_summary=phases_summary  # Pass all phases for chevron row
             ))
         
         # 4. Decision summary slide (if enabled)
@@ -308,7 +310,8 @@ class ProcessPresentationGenerator:
                 flows_tuples,
                 slide.action_title,
                 slide.phase_number,
-                slide.total_phases
+                slide.total_phases,
+                all_phases=slide.phases_summary  # Pass all phases for chevron row
             )
         
         elif slide.slide_type == "decision_summary":

@@ -1,6 +1,7 @@
 ---
 name: bpmn-to-pptx
-description: "Transform BPMN 2.0 process diagrams into professional, editable PowerPoint presentations. Automatically chunks complex processes into hierarchical slide decks (8-10 steps per slide) following McKinsey/BCG presentation standards."
+version: 2.0.0
+description: "Transform BPMN 2.0 process diagrams into professional, editable PowerPoint presentations. Features a 3-tier hierarchical layout with chevrons, rounded boxes, and square task boxes with detailed bullet points."
 license: MIT
 ---
 
@@ -59,7 +60,11 @@ The skill generates a multi-slide deck:
 
 1. **Title Slide** - Process name and metadata
 2. **Overview Slide** - Phase-level chevron diagram (max 7 phases)
-3. **Phase Detail Slides** - One per phase with full process flow (8-10 steps each)
+3. **Phase Detail Slides** - One per phase with 3-tier hierarchical layout:
+   - **Level 1 (Chevrons)**: All phases shown as chevrons, with current phase highlighted
+   - **Level 2 (White Rounded Boxes)**: Task groups/categories within the phase
+   - **Level 3 (Gray Square Boxes)**: Individual tasks/activities
+   - **Bullet Points**: Detailed descriptions of each task below the boxes
 4. **Decision Summary** - (Optional) Key decision points listed
 
 ## Usage
@@ -135,9 +140,12 @@ print(f"Generated: {output_path}")
 - Progressive disclosure through hierarchical navigation
 
 ### 3. Visual Hierarchy
-- Consistent color coding for element types
-- Clear flow direction (left-to-right)
-- Decision points visually emphasized
+- **3-Tier Layout**: Each phase slide shows chevrons → rounded boxes → square boxes
+  - Level 1 (Chevrons): Phase navigation - shows all phases with current highlighted
+  - Level 2 (White Rounded Boxes): Task group categories - conceptual groupings
+  - Level 3 (Gray Square Boxes): Individual tasks - specific activities
+- Bullet points below provide detailed descriptions for each task
+- Single row per level for clean, scannable layout
 
 ### 4. Consulting Standards
 - Action titles (not labels)
