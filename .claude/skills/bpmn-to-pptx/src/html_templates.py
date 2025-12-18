@@ -182,16 +182,37 @@ class HTMLTemplates:
         flows: List[Tuple[str, str, Optional[str]]],  # (from_id, to_id, label)
         action_title: Optional[str] = None,
         phase_number: int = 1,
-        total_phases: int = 1
+        total_phases: int = 1,
+        all_phases: Optional[List[Tuple[str, int]]] = None  # (name, step_count) for chevron row
     ) -> str:
-        """Generate a phase detail slide with process flow diagram."""
-        
+        """Generate a phase detail slide with 3-tier hierarchical layout.
+
+        Layout:
+        - Row 1 (Level 1): Chevrons showing all phases, current phase highlighted
+        - Row 2 (Level 2): White rounded boxes showing task groups
+        - Row 3 (Level 3): Gray square boxes showing individual tasks
+        - Below Row 3: Bullet points with task details
+        """
+
         if not action_title:
             action_title = f"Phase {phase_number} encompasses {len(elements)} activities"
-        
-        # Generate the process flow SVG
-        flow_svg = self._generate_flow_svg(elements, flows)
-        
+
+        # Build phase chevrons (Level 1)
+        if all_phases:
+            chevrons_html = self._generate_phase_chevrons(all_phases, phase_number)
+        else:
+            # Fallback: just show current phase
+            chevrons_html = self._generate_phase_chevrons([(phase.name, len(elements))], 1)
+
+        # Group elements into Level 2 categories and Level 3 tasks
+        task_groups = self._group_elements_for_hierarchy(elements, flows)
+
+        # Generate Level 2 (white rounded boxes) and Level 3 (gray square boxes)
+        level2_html = self._generate_level2_boxes(task_groups)
+
+        # Generate bullet points for task details
+        bullets_html = self._generate_task_bullets(task_groups)
+
         return f'''<!DOCTYPE html>
 <html>
 <head>
@@ -202,14 +223,14 @@ class HTMLTemplates:
             display: flex;
             flex-direction: column;
             height: 100%;
-            padding: 20px 32px;
+            padding: 16px 28px;
             box-sizing: border-box;
         }}
         .header {{
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }}
         .slide-title {{
             font-family: "{self.brand.heading_font}", sans-serif;
@@ -230,15 +251,171 @@ class HTMLTemplates:
             font-family: "{self.brand.body_font}", sans-serif;
             font-size: {self.brand.action_title_size}px;
             color: #{self.brand.text_secondary};
-            margin: 0 0 16px 0;
+            margin: 0 0 12px 0;
             font-style: italic;
         }}
-        .flow-container {{
-            flex: 1;
+
+        /* Level 1: Phase Chevrons */
+        .level1-container {{
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 16px;
+            gap: 0;
+        }}
+        .phase-chevron {{
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-width: 100px;
+            height: 50px;
+            background: #{self.brand.text_secondary};
+            color: white;
+            padding: 6px 16px 6px 24px;
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%, 15px 50%);
+            margin-left: -8px;
+            opacity: 0.5;
+        }}
+        .phase-chevron:first-child {{
+            clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 50%, calc(100% - 15px) 100%, 0 100%);
+            margin-left: 0;
+            padding-left: 16px;
+        }}
+        .phase-chevron.active {{
+            background: #{self.brand.primary};
+            opacity: 1;
+        }}
+        .phase-chevron-number {{
+            font-family: "{self.brand.heading_font}", sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+        }}
+        .phase-chevron-name {{
+            font-family: "{self.brand.body_font}", sans-serif;
+            font-size: 9px;
+            text-align: center;
+            line-height: 1.1;
+            max-width: 80px;
             overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }}
+
+        /* Level 2: White Rounded Boxes (Task Groups) */
+        .level2-container {{
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 12px;
+        }}
+        .level2-box {{
+            background: #FFFFFF;
+            border: 2px solid #{self.brand.primary};
+            border-radius: 12px;
+            padding: 10px 16px;
+            min-width: 140px;
+            max-width: 200px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }}
+        .level2-title {{
+            font-family: "{self.brand.heading_font}", sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: #{self.brand.primary};
+            margin: 0;
+        }}
+
+        /* Level 3: Gray Square Boxes (Individual Tasks) */
+        .level3-container {{
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 16px;
+        }}
+        .level3-group {{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }}
+        .level3-tasks {{
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }}
+        .level3-box {{
+            background: #E8E8E8;
+            border: 1px solid #A0A0A0;
+            border-radius: 0;
+            padding: 8px 12px;
+            min-width: 100px;
+            max-width: 140px;
+            text-align: center;
+        }}
+        .level3-title {{
+            font-family: "{self.brand.body_font}", sans-serif;
+            font-size: 10px;
+            font-weight: 500;
+            color: #{self.brand.text_primary};
+            margin: 0;
+            line-height: 1.2;
+        }}
+
+        /* Connector lines between levels */
+        .connector-container {{
+            display: flex;
+            justify-content: center;
+            margin: 4px 0;
+        }}
+        .connector-line {{
+            width: 2px;
+            height: 12px;
+            background: #{self.brand.text_secondary};
+        }}
+
+        /* Bullet Points Section */
+        .bullets-container {{
+            flex: 1;
+            background: #F8F9FA;
+            border-radius: 8px;
+            padding: 12px 16px;
+            overflow-y: auto;
+        }}
+        .bullets-title {{
+            font-family: "{self.brand.heading_font}", sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            color: #{self.brand.primary};
+            margin: 0 0 8px 0;
+        }}
+        .task-bullet-group {{
+            margin-bottom: 10px;
+        }}
+        .task-bullet-header {{
+            font-family: "{self.brand.body_font}", sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: #{self.brand.text_primary};
+            margin: 0 0 4px 0;
+        }}
+        .task-bullet-list {{
+            margin: 0;
+            padding-left: 20px;
+        }}
+        .task-bullet-item {{
+            font-family: "{self.brand.body_font}", sans-serif;
+            font-size: 10px;
+            color: #{self.brand.text_secondary};
+            margin: 2px 0;
+            line-height: 1.3;
         }}
     </style>
 </head>
@@ -249,12 +426,191 @@ class HTMLTemplates:
             <span class="phase-indicator">Phase {phase_number} of {total_phases}</span>
         </div>
         <p class="action-title">{action_title}</p>
-        <div class="flow-container">
-            {flow_svg}
+
+        <!-- Level 1: Phase Chevrons -->
+        <div class="level1-container">
+            {chevrons_html}
+        </div>
+
+        <!-- Level 2 & 3: Task Groups and Individual Tasks -->
+        {level2_html}
+
+        <!-- Task Details Bullets -->
+        <div class="bullets-container">
+            <div class="bullets-title">Activity Details</div>
+            {bullets_html}
         </div>
     </div>
 </body>
 </html>'''
+
+    def _generate_phase_chevrons(self, phases: List[Tuple[str, int]], active_phase: int) -> str:
+        """Generate chevron HTML for Level 1 (phase overview row)."""
+        html_parts = []
+        for i, (name, count) in enumerate(phases, 1):
+            active_class = "active" if i == active_phase else ""
+            display_name = name if len(name) <= 15 else name[:12] + "..."
+            html_parts.append(f'''
+            <div class="phase-chevron {active_class}">
+                <span class="phase-chevron-number">{i}</span>
+                <span class="phase-chevron-name">{display_name}</span>
+            </div>''')
+        return '\n'.join(html_parts)
+
+    def _group_elements_for_hierarchy(
+        self,
+        elements: List[ProcessElement],
+        flows: List[Tuple[str, str, Optional[str]]]
+    ) -> List[Dict]:
+        """Group elements into Level 2 categories containing Level 3 tasks.
+
+        Returns list of groups, each with:
+        - name: group name
+        - tasks: list of ProcessElement objects
+        """
+        # Filter to only task-like elements (not gateways, events)
+        tasks = [e for e in elements if e.element_type in [
+            ElementType.TASK, ElementType.USER_TASK,
+            ElementType.SERVICE_TASK, ElementType.SUBPROCESS
+        ]]
+
+        if not tasks:
+            return []
+
+        # Group tasks into logical clusters of 3-4 tasks each
+        groups = []
+        group_size = 3  # Target 3 tasks per group for good visual balance
+
+        for i in range(0, len(tasks), group_size):
+            group_tasks = tasks[i:i + group_size]
+
+            # Generate group name from first task or common theme
+            group_name = self._generate_group_name(group_tasks)
+
+            groups.append({
+                'name': group_name,
+                'tasks': group_tasks
+            })
+
+        return groups
+
+    def _generate_group_name(self, tasks: List[ProcessElement]) -> str:
+        """Generate a descriptive name for a group of tasks."""
+        if not tasks:
+            return "Activities"
+
+        if len(tasks) == 1:
+            return tasks[0].display_name
+
+        # Try to find common theme from task names
+        names = [t.display_name for t in tasks]
+
+        # Check for common first word
+        first_words = [n.split()[0].lower() if n.split() else '' for n in names]
+        if first_words and len(set(first_words)) == 1 and first_words[0]:
+            return first_words[0].title() + " Activities"
+
+        # Check for common action verbs
+        common_verbs = ['prepare', 'setup', 'configure', 'validate', 'review',
+                       'clean', 'inspect', 'test', 'assemble', 'install', 'remove']
+        for verb in common_verbs:
+            if all(verb in n.lower() for n in names):
+                return verb.title() + " Steps"
+
+        # Default: use first task name as group indicator
+        first_name = tasks[0].display_name
+        if len(first_name) > 20:
+            first_name = first_name[:17] + "..."
+        return first_name
+
+    def _generate_level2_boxes(self, task_groups: List[Dict]) -> str:
+        """Generate HTML for Level 2 (white rounded boxes) and Level 3 (gray square boxes)."""
+        if not task_groups:
+            return '<div class="level2-container"><div class="level2-box"><p class="level2-title">No activities</p></div></div>'
+
+        # Build Level 2 boxes
+        level2_parts = []
+        for group in task_groups:
+            level2_parts.append(f'''
+            <div class="level2-box">
+                <p class="level2-title">{group['name']}</p>
+            </div>''')
+
+        level2_html = f'''
+        <div class="level2-container">
+            {''.join(level2_parts)}
+        </div>
+        <div class="connector-container">
+            <div class="connector-line"></div>
+        </div>'''
+
+        # Build Level 3 groups with tasks
+        level3_parts = []
+        for group in task_groups:
+            task_boxes = []
+            for task in group['tasks']:
+                task_name = task.display_name
+                if len(task_name) > 20:
+                    task_name = task_name[:17] + "..."
+                task_boxes.append(f'''
+                <div class="level3-box">
+                    <p class="level3-title">{task_name}</p>
+                </div>''')
+
+            level3_parts.append(f'''
+            <div class="level3-group">
+                <div class="level3-tasks">
+                    {''.join(task_boxes)}
+                </div>
+            </div>''')
+
+        level3_html = f'''
+        <div class="level3-container">
+            {''.join(level3_parts)}
+        </div>'''
+
+        return level2_html + level3_html
+
+    def _generate_task_bullets(self, task_groups: List[Dict]) -> str:
+        """Generate bullet points HTML for task details."""
+        if not task_groups:
+            return '<p class="task-bullet-item">No activity details available</p>'
+
+        html_parts = []
+        for group in task_groups:
+            bullets = []
+            for task in group['tasks']:
+                # Use documentation if available, otherwise generate description
+                if task.documentation:
+                    description = task.documentation
+                else:
+                    description = self._generate_task_description(task)
+
+                bullets.append(f'<li class="task-bullet-item">{description}</li>')
+
+            html_parts.append(f'''
+            <div class="task-bullet-group">
+                <p class="task-bullet-header">{group['name']}</p>
+                <ul class="task-bullet-list">
+                    {''.join(bullets)}
+                </ul>
+            </div>''')
+
+        return '\n'.join(html_parts)
+
+    def _generate_task_description(self, task: ProcessElement) -> str:
+        """Generate a description for a task based on its name and type."""
+        name = task.display_name
+
+        # Generate contextual description based on task type
+        if task.element_type == ElementType.USER_TASK:
+            return f"Manual activity: {name} - requires user input and verification"
+        elif task.element_type == ElementType.SERVICE_TASK:
+            return f"Automated step: {name} - system performs this action automatically"
+        elif task.element_type == ElementType.SUBPROCESS:
+            return f"Sub-process: {name} - contains nested activities (see detailed breakdown)"
+        else:
+            return f"{name} - execute this step to progress the workflow"
 
     def _generate_flow_svg(
         self, 
