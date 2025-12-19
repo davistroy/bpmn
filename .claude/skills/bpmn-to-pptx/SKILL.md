@@ -167,7 +167,105 @@ print(f"Generated: {output_path}")
 
 ## Brand Configuration
 
-Create custom brand configurations in YAML:
+Create custom brand configurations in JSON or YAML format. JSON is recommended for portability.
+
+### JSON Style Format (Recommended)
+
+```json
+{
+  "name": "My Company",
+  "colors": {
+    "primary": "1A365D",
+    "secondary": "2B6CB0",
+    "accent": "ED8936",
+    "background": "FFFFFF",
+    "text_primary": "1A202C",
+    "text_secondary": "4A5568",
+
+    "task_fill": "EBF8FF",
+    "task_border": "3182CE",
+    "decision_fill": "FEFCBF",
+    "decision_border": "D69E2E",
+    "parallel_fill": "E9D8FD",
+    "parallel_border": "805AD5",
+    "start_fill": "C6F6D5",
+    "start_border": "38A169",
+    "end_fill": "FED7D7",
+    "end_border": "E53E3E",
+    "subprocess_fill": "F7FAFC",
+    "subprocess_border": "718096",
+    "merge_fill": "E2E8F0",
+    "merge_border": "718096"
+  },
+  "fonts": {
+    "title": "Calibri Light",
+    "heading": "Calibri",
+    "body": "Calibri",
+    "sizes": {
+      "slide_title": 28,
+      "action_title": 16,
+      "phase_label": 14,
+      "shape_text": 10,
+      "footnote": 8
+    }
+  },
+  "layout": {
+    "slide_width": 13.333,
+    "slide_height": 7.5,
+    "margin_left": 0.5,
+    "margin_right": 0.5,
+    "margin_top": 0.75,
+    "margin_bottom": 0.5,
+    "shape_width": 1.4,
+    "shape_height": 0.6,
+    "shape_gap_h": 0.3,
+    "shape_gap_v": 0.7
+  }
+}
+```
+
+### Color Properties Reference
+
+| Property | Purpose | Used In |
+|----------|---------|---------|
+| `primary` | Main brand color | Slide titles, active chevrons, level 2 box borders |
+| `secondary` | Secondary brand color | Alternating chevrons, gradients |
+| `accent` | Highlight color | Call-to-action elements, emphasis |
+| `background` | Slide background | All slides |
+| `text_primary` | Main text color | Body text, labels |
+| `text_secondary` | Muted text color | Subtitles, secondary labels |
+| `task_fill` / `task_border` | Task box styling | User tasks, service tasks |
+| `decision_fill` / `decision_border` | Decision diamond styling | Exclusive gateways |
+| `parallel_fill` / `parallel_border` | Parallel gateway styling | Parallel gateways |
+| `start_fill` / `start_border` | Start event styling | Start events |
+| `end_fill` / `end_border` | End event styling | End events |
+| `subprocess_fill` / `subprocess_border` | Subprocess styling | Subprocesses |
+| `merge_fill` / `merge_border` | Merge gateway styling | Merge gateways |
+
+### Pre-built Style Files
+
+| File | Description |
+|------|-------------|
+| `cfa-style.json` | CFA Institute brand (deep blue/purple palette) |
+| `sfc-style.json` | Stratfield Consulting brand (navy/gold palette) |
+| `default.yaml` | Default blue/orange palette |
+| `stratfield.yaml` | Stratfield Consulting (YAML format) |
+
+### Usage with Style Files
+
+```python
+# Using JSON style file
+generator = ProcessPresentationGenerator(
+    brand_config="templates/brand_configs/cfa-style.json"
+)
+
+# Using preset name
+generator = ProcessPresentationGenerator(
+    brand_config="stratfield"
+)
+```
+
+### YAML Format (Legacy)
 
 ```yaml
 # brand_configs/my_brand.yaml
@@ -175,16 +273,16 @@ brand:
   name: "My Company"
 
 colors:
-  primary: "#1A365D"
-  secondary: "#2B6CB0"
-  accent: "#ED8936"
-  background: "#FFFFFF"
-  
+  primary: "1A365D"
+  secondary: "2B6CB0"
+  accent: "ED8936"
+  background: "FFFFFF"
+
   # Process element colors (optional - uses defaults if not specified)
-  task_fill: "#EBF8FF"
-  task_border: "#3182CE"
-  decision_fill: "#FEFCBF"
-  decision_border: "#D69E2E"
+  task_fill: "EBF8FF"
+  task_border: "3182CE"
+  decision_fill: "FEFCBF"
+  decision_border: "D69E2E"
 
 fonts:
   title: "Calibri Light"
@@ -236,8 +334,11 @@ bpmn-to-pptx/
 │   └── brand_config.py         # Brand configuration loader
 ├── templates/
 │   └── brand_configs/
-│       ├── default.yaml
-│       └── stratfield.yaml
+│       ├── style-schema.json   # JSON schema for style files
+│       ├── cfa-style.json      # CFA Institute brand colors
+│       ├── sfc-style.json      # Stratfield Consulting brand
+│       ├── default.yaml        # Default brand (YAML)
+│       └── stratfield.yaml     # Stratfield brand (YAML)
 └── examples/
     └── rochester-2g-rebuild.bpmn
 ```

@@ -2,6 +2,7 @@
 Brand Configuration Loader - Loads and validates brand settings.
 """
 
+import json
 import os
 from typing import Optional, Union
 import yaml
@@ -136,9 +137,12 @@ def load_brand_config(brand: Union[str, dict, None] = None) -> BrandConfig:
         # Check if it's a file path
         elif os.path.isfile(brand):
             with open(brand, 'r') as f:
-                config_dict = yaml.safe_load(f)
+                if brand.endswith('.json'):
+                    config_dict = json.load(f)
+                else:
+                    config_dict = yaml.safe_load(f)
         else:
-            raise ValueError(f"Unknown brand '{brand}'. Use 'default', 'stratfield', or provide a path to a YAML file.")
+            raise ValueError(f"Unknown brand '{brand}'. Use 'default', 'stratfield', or provide a path to a YAML/JSON style file.")
     elif isinstance(brand, dict):
         config_dict = brand
     else:
@@ -279,3 +283,67 @@ def save_brand_config(config: BrandConfig, file_path: str):
     
     with open(file_path, 'w') as f:
         yaml.dump(config_dict, f, default_flow_style=False, sort_keys=False)
+
+
+def save_brand_config_json(config: BrandConfig, file_path: str):
+    """Save a brand configuration to a JSON style file."""
+
+    config_dict = {
+        'name': config.name,
+        'colors': {
+            'primary': config.primary,
+            'secondary': config.secondary,
+            'accent': config.accent,
+            'background': config.background,
+            'text_primary': config.text_primary,
+            'text_secondary': config.text_secondary,
+            'task_fill': config.task_fill,
+            'task_border': config.task_border,
+            'decision_fill': config.decision_fill,
+            'decision_border': config.decision_border,
+            'parallel_fill': config.parallel_fill,
+            'parallel_border': config.parallel_border,
+            'start_fill': config.start_fill,
+            'start_border': config.start_border,
+            'end_fill': config.end_fill,
+            'end_border': config.end_border,
+            'subprocess_fill': config.subprocess_fill,
+            'subprocess_border': config.subprocess_border,
+            'merge_fill': config.merge_fill,
+            'merge_border': config.merge_border,
+        },
+        'fonts': {
+            'title': config.title_font,
+            'heading': config.heading_font,
+            'body': config.body_font,
+            'sizes': {
+                'slide_title': config.slide_title_size,
+                'action_title': config.action_title_size,
+                'phase_label': config.phase_label_size,
+                'shape_text': config.shape_text_size,
+                'footnote': config.footnote_size,
+            }
+        },
+        'layout': {
+            'slide_width': config.slide_width,
+            'slide_height': config.slide_height,
+            'margin_left': config.margin_left,
+            'margin_right': config.margin_right,
+            'margin_top': config.margin_top,
+            'margin_bottom': config.margin_bottom,
+            'shape_width': config.shape_width,
+            'shape_height': config.shape_height,
+            'shape_gap_h': config.shape_gap_h,
+            'shape_gap_v': config.shape_gap_v,
+        }
+    }
+
+    if config.logo_path:
+        config_dict['logo'] = {
+            'path': config.logo_path,
+            'width': config.logo_width,
+            'position': config.logo_position,
+        }
+
+    with open(file_path, 'w') as f:
+        json.dump(config_dict, f, indent=2)

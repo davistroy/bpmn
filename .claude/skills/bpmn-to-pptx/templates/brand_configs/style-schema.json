@@ -1,0 +1,178 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "bpmn-pptx-style-schema",
+  "title": "BPMN to PowerPoint Style Configuration",
+  "description": "Defines the color scheme and styling for BPMN to PowerPoint presentations",
+  "type": "object",
+  "required": ["name", "colors"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Brand or style name for identification"
+    },
+    "colors": {
+      "type": "object",
+      "description": "Color definitions (hex format without # prefix)",
+      "required": ["primary", "secondary", "accent", "background", "text_primary", "text_secondary"],
+      "properties": {
+        "primary": {
+          "type": "string",
+          "description": "Primary brand color - used for slide titles, active elements, emphasis",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "secondary": {
+          "type": "string",
+          "description": "Secondary brand color - used for alternating elements, subtle accents",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "accent": {
+          "type": "string",
+          "description": "Accent/highlight color - used for emphasis and call-to-action elements",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "background": {
+          "type": "string",
+          "description": "Slide background color",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "text_primary": {
+          "type": "string",
+          "description": "Primary text color for main content",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "text_secondary": {
+          "type": "string",
+          "description": "Secondary text color for subtitles and muted content",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "task_fill": {
+          "type": "string",
+          "description": "Background color for task boxes",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "task_border": {
+          "type": "string",
+          "description": "Border color for task boxes",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "decision_fill": {
+          "type": "string",
+          "description": "Background color for decision diamonds",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "decision_border": {
+          "type": "string",
+          "description": "Border color for decision diamonds",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "parallel_fill": {
+          "type": "string",
+          "description": "Background color for parallel gateways and service tasks",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "parallel_border": {
+          "type": "string",
+          "description": "Border color for parallel gateways and service tasks",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "start_fill": {
+          "type": "string",
+          "description": "Background color for start event circles",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "start_border": {
+          "type": "string",
+          "description": "Border color for start event circles",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "end_fill": {
+          "type": "string",
+          "description": "Background color for end event circles",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "end_border": {
+          "type": "string",
+          "description": "Border color for end event circles",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "subprocess_fill": {
+          "type": "string",
+          "description": "Background color for subprocess containers",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "subprocess_border": {
+          "type": "string",
+          "description": "Border color for subprocess containers",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "merge_fill": {
+          "type": "string",
+          "description": "Background color for merge gateways",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        },
+        "merge_border": {
+          "type": "string",
+          "description": "Border color for merge gateways",
+          "pattern": "^[0-9A-Fa-f]{6}$"
+        }
+      }
+    },
+    "fonts": {
+      "type": "object",
+      "description": "Font configuration for the presentation",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Font family for slide titles"
+        },
+        "heading": {
+          "type": "string",
+          "description": "Font family for headings"
+        },
+        "body": {
+          "type": "string",
+          "description": "Font family for body text"
+        },
+        "sizes": {
+          "type": "object",
+          "properties": {
+            "slide_title": { "type": "integer", "description": "Font size for slide titles (pt)" },
+            "action_title": { "type": "integer", "description": "Font size for action titles (pt)" },
+            "phase_label": { "type": "integer", "description": "Font size for phase labels (pt)" },
+            "shape_text": { "type": "integer", "description": "Font size for shape text (pt)" },
+            "footnote": { "type": "integer", "description": "Font size for footnotes (pt)" }
+          }
+        }
+      }
+    },
+    "layout": {
+      "type": "object",
+      "description": "Slide layout dimensions (in inches)",
+      "properties": {
+        "slide_width": { "type": "number", "description": "Slide width in inches" },
+        "slide_height": { "type": "number", "description": "Slide height in inches" },
+        "margin_left": { "type": "number", "description": "Left margin in inches" },
+        "margin_right": { "type": "number", "description": "Right margin in inches" },
+        "margin_top": { "type": "number", "description": "Top margin in inches" },
+        "margin_bottom": { "type": "number", "description": "Bottom margin in inches" },
+        "shape_width": { "type": "number", "description": "Default shape width in inches" },
+        "shape_height": { "type": "number", "description": "Default shape height in inches" },
+        "shape_gap_h": { "type": "number", "description": "Horizontal gap between shapes in inches" },
+        "shape_gap_v": { "type": "number", "description": "Vertical gap between shapes in inches" }
+      }
+    },
+    "logo": {
+      "type": "object",
+      "description": "Optional logo configuration",
+      "properties": {
+        "path": { "type": "string", "description": "Path to logo image file" },
+        "width": { "type": "number", "description": "Logo width in inches" },
+        "position": {
+          "type": "string",
+          "enum": ["top_left", "top_right", "bottom_left", "bottom_right"],
+          "description": "Logo position on slides"
+        }
+      }
+    }
+  }
+}
