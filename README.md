@@ -1,16 +1,16 @@
 # BPMN Skills for Claude Code
 
-A collection of Claude Code skills for working with Business Process Model and Notation (BPMN) 2.0 workflows. These skills enable Claude to generate BPMN XML from natural language descriptions and render the diagrams as PNG images.
+A collection of Claude Code skills for working with Business Process Model and Notation (BPMN) 2.0 workflows. These skills enable Claude to generate BPMN XML from natural language descriptions, render diagrams as PNG images, and create professional PowerPoint presentations.
 
 ## Overview
 
-This project provides skills that work together to create a complete BPMN workflow:
+This project provides three skills that work together to create a complete BPMN documentation workflow:
 
-| Skill | Purpose | Input | Output |
-|-------|---------|-------|--------|
-| **bpmn-xml-generator** | Generate BPMN XML from process descriptions | Natural language | BPMN 2.0 XML file |
-| **bpmn-diagram** | Render BPMN diagrams as images | BPMN 2.0 XML | PNG image |
-| **bpmn-to-pptx** | Convert BPMN to PowerPoint presentations | BPMN 2.0 XML | PowerPoint (.pptx) |
+| Skill | Version | Purpose | Input | Output |
+|-------|---------|---------|-------|--------|
+| **bpmn-xml-generator** | 1.1 | Generate BPMN XML from process descriptions | Natural language | BPMN 2.0 XML file |
+| **bpmn-diagram** | 1.0 | Render BPMN diagrams as images | BPMN 2.0 XML | PNG image |
+| **bpmn-to-pptx** | 2.0 | Convert BPMN to PowerPoint presentations | BPMN 2.0 XML | PowerPoint (.pptx) |
 
 ### Typical Workflow
 
@@ -21,19 +21,29 @@ This project provides skills that work together to create a complete BPMN workfl
 │   workflow"         │     │                     │     │                 │
 └─────────────────────┘     └─────────────────────┘     └─────────────────┘
      User Request          bpmn-xml-generator           bpmn-diagram
+                                    │
+                                    │
+                                    ▼
+                           ┌─────────────────────┐
+                           │  PowerPoint Deck    │
+                           │  (process.pptx)     │
+                           └─────────────────────┘
+                                bpmn-to-pptx
 ```
 
 ## Skills
 
 ### 1. BPMN XML Generator
 
-Transforms natural language process descriptions into fully compliant BPMN 2.0 XML files.
+Transforms natural language process descriptions into fully compliant BPMN 2.0 XML files with embedded documentation for downstream PowerPoint generation.
 
 **Features:**
-- Interactive question framework to clarify requirements
-- Automatic task type detection (User Task, Service Task, etc.)
-- Smart gateway selection (Exclusive, Parallel, Inclusive)
+- Interactive question framework with 7 phases of clarification
+- Automatic task type detection (User Task, Service Task, Script Task, etc.)
+- Smart gateway selection (Exclusive, Parallel, Inclusive, Event-Based)
 - Complete diagram interchange (DI) data for visual rendering
+- **Task documentation elements** for detailed descriptions (critical for PowerPoint)
+- **Phase comments** in XML for automatic hierarchy detection
 - Compatible with Camunda, Flowable, bpmn.io, and other BPMN tools
 
 **Trigger phrases:**
@@ -75,16 +85,20 @@ User: Create a PNG from this BPMN XML: [XML content]
 User: Visualize the process diagram
 ```
 
-### 3. BPMN to PowerPoint Generator
+### 3. BPMN to PowerPoint Generator (v2.0)
 
-Transforms BPMN 2.0 process diagrams into professional, editable PowerPoint presentations following McKinsey/BCG consulting standards. Automatically manages complexity by chunking processes into hierarchical slide structures with 8-10 steps per slide.
+Transforms BPMN 2.0 process diagrams into professional, editable PowerPoint presentations following McKinsey/BCG consulting standards. Features a 3-tier hierarchical layout with automatic complexity management.
 
 **Features:**
+- **3-Tier Hierarchical Layout** on each phase slide:
+  - Level 1 (Chevrons): Phase navigation showing all phases with current highlighted
+  - Level 2 (White Rounded Boxes): Task group categories within the phase
+  - Level 3 (Gray Square Boxes): Individual tasks with detailed bullet points
 - McKinsey-style action titles (complete sentences stating the "so what")
 - Automatic process chunking (8-10 steps per slide based on cognitive load research)
-- Hierarchical structure: overview slide with phases, then detailed phase slides
+- Phase detection from XML comments, subprocess boundaries, or auto-chunking
 - Consistent color coding for BPMN element types
-- Customizable brand configurations
+- Customizable brand configurations (default, stratfield, or custom YAML)
 - 20-25% whitespace for stakeholder annotations
 
 **Trigger phrases:**
@@ -123,14 +137,19 @@ Claude: [Parses BPMN, chunks into phases, generates multi-slide deck with:
 
 ### Prerequisites
 
-- Node.js 16.x or later
+**For BPMN Diagram Renderer (Node.js):**
+- Node.js 18.x or later
 - System libraries for canvas rendering:
   - **Ubuntu/Debian:** `sudo apt-get install libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev`
   - **macOS:** `brew install cairo pango`
 
+**For BPMN to PowerPoint (Python):**
+- Python 3.8 or later
+- Dependencies: lxml, pyyaml, python-pptx
+
 ### Setup
 
-Run the setup script to install Node.js dependencies for the diagram renderer:
+**Diagram Renderer Setup:**
 
 ```bash
 cd .claude/skills/bpmn-diagram/scripts
@@ -138,9 +157,21 @@ cd .claude/skills/bpmn-diagram/scripts
 ```
 
 This installs:
-- `bpmn-js` - BPMN 2.0 rendering toolkit
-- `jsdom` - DOM implementation for Node.js
-- `canvas` - Canvas implementation for PNG generation
+- `bpmn-js` (^17.11.0) - BPMN 2.0 rendering toolkit
+- `jsdom` (^25.0.0) - DOM implementation for Node.js
+- `canvas` (^2.11.2) - Canvas implementation for PNG generation
+
+**PowerPoint Generator Setup:**
+
+```bash
+cd .claude/skills/bpmn-to-pptx/scripts
+./setup.sh
+```
+
+This installs:
+- `lxml` - XML parsing for BPMN files
+- `pyyaml` - Brand configuration loading
+- `python-pptx` - PowerPoint generation (via html2pptx)
 
 ## Usage
 
@@ -238,45 +269,53 @@ Both skills support the full BPMN 2.0 specification:
 
 ```
 .claude/skills/
-├── bpmn-diagram/                    # Diagram rendering skill
-│   ├── SKILL.md                     # Skill definition
+├── bpmn-diagram/                    # Diagram rendering skill (Node.js)
+│   ├── SKILL.md                     # Skill definition and usage guide
 │   ├── scripts/
-│   │   ├── render-bpmn.js           # Main rendering script
-│   │   ├── package.json             # Node.js dependencies
-│   │   └── setup.sh                 # Setup script
+│   │   ├── render-bpmn.js           # Main rendering script (bpmn-js + canvas)
+│   │   ├── package.json             # Dependencies: bpmn-js ^17.11, jsdom ^25, canvas ^2.11
+│   │   └── setup.sh                 # Installation script
 │   ├── references/
 │   │   └── bpmn-elements.md         # BPMN 2.0 elements reference
 │   └── assets/
-│       └── sample.bpmn              # Sample BPMN file
+│       └── sample.bpmn              # Sample BPMN file for testing
 │
-├── bpmn-xml-generator/              # XML generation skill
-│   ├── SKILL.md                     # Skill definition
+├── bpmn-xml-generator/              # XML generation skill (Prompt-based)
+│   ├── SKILL.md                     # Comprehensive skill definition with question framework
 │   ├── templates/
-│   │   ├── bpmn-skeleton.xml        # Base XML structure
-│   │   └── element-templates.xml    # Element snippets
+│   │   ├── bpmn-skeleton.xml        # Base XML structure with namespaces
+│   │   └── element-templates.xml    # Element snippets for all BPMN types
 │   ├── examples/
 │   │   ├── simple-approval.bpmn     # Simple approval workflow
 │   │   ├── complex-order-process.bpmn
 │   │   ├── parallel-processing.bpmn
 │   │   └── subprocess-example.bpmn
 │   └── references/
-│       ├── bpmn-elements-reference.md
-│       ├── clarification-patterns.md
-│       └── xml-namespaces.md
+│       ├── bpmn-elements-reference.md  # Complete element catalog
+│       ├── clarification-patterns.md   # Question templates by category
+│       └── xml-namespaces.md           # Namespace documentation
 │
-└── bpmn-to-pptx/                    # PowerPoint generation skill
-    ├── SKILL.md                     # Skill definition
+└── bpmn-to-pptx/                    # PowerPoint generation skill (Python)
+    ├── SKILL.md                     # Skill definition (v2.0.0)
+    ├── scripts/
+    │   └── setup.sh                 # Python dependencies setup
     ├── src/
-    │   ├── bpmn_parser.py           # BPMN XML parsing
-    │   ├── process_model.py         # Data structures
-    │   ├── hierarchy_builder.py     # Phase detection & chunking
-    │   ├── slide_generator.py       # Main orchestration
-    │   ├── html_templates.py        # HTML slide templates
-    │   └── brand_config.py          # Brand configuration loader
+    │   ├── __init__.py              # Package initialization
+    │   ├── bpmn_parser.py           # BPMN XML parsing with lxml
+    │   ├── process_model.py         # Data structures and type definitions
+    │   ├── hierarchy_builder.py     # Phase detection & 3-tier chunking
+    │   ├── slide_generator.py       # Main orchestration and html2pptx integration
+    │   ├── html_templates.py        # HTML slide templates for each slide type
+    │   └── brand_config.py          # YAML brand configuration loader
     ├── templates/
-    │   └── brand_configs/           # Brand configuration files
+    │   └── brand_configs/
+    │       ├── default.yaml         # Default brand colors and fonts
+    │       └── stratfield.yaml      # Stratfield brand configuration
+    ├── references/
+    │   └── design-reference.md      # Design principles documentation
     └── examples/
-        └── rochester-2g-rebuild.bpmn
+        ├── rochester-2g-rebuild.bpmn  # Example BPMN file
+        └── generate_example.py        # Example generation script
 ```
 
 ## Examples
@@ -355,6 +394,8 @@ For production use with complex diagrams, consider using `bpmn-to-image` with Pu
 - Swimlanes not yet supported (single-lane horizontal flow only)
 - Collapsed subprocesses shown as single shape (not expanded)
 - Complex nested gateways may require manual adjustment
+- Requires the core `pptx` skill with html2pptx for conversion
+- Max 7 phases displayed on overview slide
 
 ## Resources
 
