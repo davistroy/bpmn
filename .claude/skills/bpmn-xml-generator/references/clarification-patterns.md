@@ -241,10 +241,66 @@ Are there any activities that can happen in parallel, or must all tasks be seque
 Your choice (A/B/C/D/E):
 ```
 
-### Q9: Subprocesses
+### Q9: Task Descriptions (CRITICAL FOR POWERPOINT)
+
+**This question is essential for generating rich content in PowerPoint presentations.**
 
 ```
-## Question 9: Subprocess Candidates
+## Question 9: Task Descriptions
+
+For each task, I'll generate a detailed description explaining what happens during this step. These descriptions will be used for:
+- PowerPoint presentation bullet points (Level 3 detail)
+- Process documentation
+- Training materials
+
+Here are the proposed descriptions. Would you like to modify any?
+
+### Proposed Task Descriptions:
+
+| Task | Description |
+|------|-------------|
+| [Task 1 Name] | [2-3 sentence description covering purpose, actions, actor, and completion criteria] |
+| [Task 2 Name] | [2-3 sentence description covering purpose, actions, actor, and completion criteria] |
+| ... | ... |
+
+### Options:
+
+**A) [Recommended]**: Use these descriptions as-is
+   *Why*: These descriptions capture the essential information needed for documentation and provide appropriate detail for presentations.
+
+**B)** More concise - reduce to 1 sentence each
+**C)** More detailed - expand to 4-5 sentences each
+**D)** Let me provide custom descriptions for specific tasks
+**E)** Accept recommended answers for all remaining questions
+
+---
+Your choice (A/B/C/D/E):
+```
+
+**Description Generation Guidelines:**
+
+When generating task descriptions, include:
+
+1. **Action verb** - What specifically happens (validates, reviews, calculates, sends)
+2. **Actor/System** - Who or what performs it (system, reviewer, manager, API)
+3. **Inputs** - What data or documents are used
+4. **Outputs** - What is produced or changed
+5. **Success criteria** - How completion is determined
+
+**Examples by Task Type:**
+
+| Task Type | Example Description |
+|-----------|---------------------|
+| User Task | "Reviewer examines the submitted application for completeness and accuracy. Verifies all required documents are attached and applicant information matches supporting documentation. Marks application as approved, rejected, or requires additional information." |
+| Service Task | "System validates order details including product availability, pricing accuracy, and customer information. Checks for duplicate orders and verifies shipping address is within serviceable region. Returns validation status with any error codes." |
+| Send Task | "System sends automated email notification to relevant stakeholders. Includes summary of completed action, any required next steps, and links to detailed information. Logs notification delivery status for audit purposes." |
+| Manual Task | "Warehouse staff physically inspects items for damage before packaging. Verifies item quantity and condition against pick list. Flags any issues for supervisor review before proceeding." |
+| Script Task | "Script calculates applicable discounts based on customer tier, order value, and active promotions. Applies discount rules in priority order and stores final percentage. Logs calculation details for transparency." |
+
+### Q10: Subprocesses
+
+```
+## Question 10: Subprocess Candidates
 
 Should any group of activities be encapsulated as a subprocess?
 
@@ -272,7 +328,7 @@ Your choice (A/B/C/D/E):
 
 ## Phase 4: Flow Control Questions
 
-### Q10: Decision Points
+### Q11: Decision Points
 
 ```
 ## Question 10: Decision Points
@@ -295,7 +351,7 @@ Are there points in the process where different paths are taken based on conditi
 Your choice (A/B/C/D/E):
 ```
 
-### Q11: Gateway Types
+### Q12: Gateway Types
 
 ```
 ## Question 11: Gateway Types
@@ -318,7 +374,7 @@ For each decision point, what type of gateway should be used?
 Your choice (A/B/C/D/E):
 ```
 
-### Q12: Default Flows
+### Q13: Default Flows
 
 ```
 ## Question 12: Default Flows
@@ -339,7 +395,7 @@ For exclusive/inclusive gateways, which path should be the default (taken when n
 Your choice (A/B/C/D/E):
 ```
 
-### Q13: Loops/Cycles
+### Q14: Loops/Cycles
 
 ```
 ## Question 13: Loops and Cycles
@@ -364,7 +420,7 @@ Your choice (A/B/C/D/E):
 
 ## Phase 5: Events & Exceptions Questions
 
-### Q14: Intermediate Events
+### Q15: Intermediate Events
 
 ```
 ## Question 14: Intermediate Events
@@ -385,7 +441,7 @@ Are there any waiting points, messages sent/received, or time delays during the 
 Your choice (A/B/C/D/E):
 ```
 
-### Q15: Boundary Events
+### Q16: Boundary Events
 
 ```
 ## Question 15: Boundary Events
@@ -416,7 +472,7 @@ Your choice (A/B/C/D/E):
 | Task can be cancelled externally | Message |
 | Task can receive updates | Signal (non-interrupting) |
 
-### Q16: Error Handling
+### Q17: Error Handling
 
 ```
 ## Question 16: Error Handling
@@ -437,7 +493,7 @@ How should errors be handled in this process?
 Your choice (A/B/C/D/E):
 ```
 
-### Q17: Compensation
+### Q18: Compensation
 
 ```
 ## Question 17: Compensation
@@ -462,7 +518,7 @@ Your choice (A/B/C/D/E):
 
 ## Phase 6: Data & Integration Questions
 
-### Q18: Data Objects
+### Q19: Data Objects
 
 ```
 ## Question 18: Data Objects
@@ -483,7 +539,7 @@ What data is passed between activities in this process?
 Your choice (A/B/C/D/E):
 ```
 
-### Q19: External Systems
+### Q20: External Systems
 
 ```
 ## Question 19: External Systems
@@ -504,7 +560,7 @@ Does this process integrate with external systems or services?
 Your choice (A/B/C/D/E):
 ```
 
-### Q20: Message Flows (for Collaborations)
+### Q21: Message Flows (for Collaborations)
 
 ```
 ## Question 20: Message Flows
@@ -531,7 +587,7 @@ Your choice (A/B/C/D/E):
 
 ## Phase 7: Optimization Review
 
-### Q21: Final Structure Review
+### Q22: Final Structure Review
 
 ```
 ## Question 21: Final Structure Review
@@ -586,12 +642,13 @@ These questions should always be asked:
 - Q2: Start Event
 - Q3: End Events
 - Q6: Main Activities
-- Q21: Final Review
+- Q9: Task Descriptions (CRITICAL for PowerPoint generation)
+- Q22: Final Review
 
 ### Question Depth by Complexity
 
 **Simple Process (< 5 tasks, no decisions):**
-- Ask Q1-Q3, Q6, Q7, Q21
+- Ask Q1-Q3, Q6, Q7, Q9, Q22
 - Skip gateway, subprocess, event questions
 
 **Medium Process (5-10 tasks, 1-2 decisions):**

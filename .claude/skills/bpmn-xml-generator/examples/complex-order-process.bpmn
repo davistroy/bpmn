@@ -26,18 +26,24 @@
     id="Definitions_OrderProcess"
     targetNamespace="http://bpmn.io/schema/bpmn"
     exporter="Claude BPMN Generator"
-    exporterVersion="1.0">
+    exporterVersion="1.1">
 
     <bpmn:process id="Process_OrderFulfillment" name="Order Fulfillment Process" isExecutable="true">
 
-        <!-- ============ START EVENT ============ -->
+        <!-- Phase 1: Order Intake -->
         <bpmn:startEvent id="StartEvent_OrderReceived" name="Order Received">
             <bpmn:outgoing>Flow_Start_Validate</bpmn:outgoing>
             <bpmn:messageEventDefinition id="MessageEventDef_Order" messageRef="Message_NewOrder"/>
         </bpmn:startEvent>
 
-        <!-- ============ VALIDATION PHASE ============ -->
+        <!-- Phase 2: Validation -->
         <bpmn:serviceTask id="Activity_ValidateOrder" name="Validate Order">
+            <bpmn:documentation>
+                System validates order details including product SKUs, quantities, pricing accuracy,
+                and customer information. Checks for duplicate orders within 24-hour window. Verifies
+                shipping address is within serviceable region. Returns validation status with detailed
+                error codes if validation fails.
+            </bpmn:documentation>
             <bpmn:incoming>Flow_Start_Validate</bpmn:incoming>
             <bpmn:outgoing>Flow_Validate_Gateway</bpmn:outgoing>
         </bpmn:serviceTask>
@@ -50,6 +56,11 @@
 
         <!-- Invalid Order Path -->
         <bpmn:sendTask id="Activity_NotifyInvalid" name="Notify Customer - Invalid Order">
+            <bpmn:documentation>
+                Sends email notification to customer explaining why their order could not be processed.
+                Includes specific validation error details, suggestions for correction, and customer
+                service contact information. Logs notification for audit trail.
+            </bpmn:documentation>
             <bpmn:incoming>Flow_Invalid</bpmn:incoming>
             <bpmn:outgoing>Flow_Invalid_End</bpmn:outgoing>
         </bpmn:sendTask>
@@ -59,8 +70,13 @@
             <bpmn:errorEventDefinition id="ErrorEventDef_Cancelled" errorRef="Error_InvalidOrder"/>
         </bpmn:endEvent>
 
-        <!-- ============ INVENTORY PHASE ============ -->
+        <!-- Phase 3: Inventory Check -->
         <bpmn:serviceTask id="Activity_CheckInventory" name="Check Inventory">
+            <bpmn:documentation>
+                Queries warehouse management system for real-time inventory availability. Checks all
+                requested SKUs against available stock, considering reserved quantities and safety
+                stock levels. Returns availability status for each line item with location details.
+            </bpmn:documentation>
             <bpmn:incoming>Flow_Valid</bpmn:incoming>
             <bpmn:outgoing>Flow_Inventory_Gateway</bpmn:outgoing>
         </bpmn:serviceTask>
@@ -73,11 +89,21 @@
 
         <!-- Out of Stock Path -->
         <bpmn:serviceTask id="Activity_BackorderItem" name="Create Backorder">
+            <bpmn:documentation>
+                Creates backorder record in the system for out-of-stock items. Reserves incoming inventory
+                from next shipment. Calculates estimated availability date based on supplier lead times.
+                Updates customer order status to "Backordered" with expected fulfillment date.
+            </bpmn:documentation>
             <bpmn:incoming>Flow_OutOfStock</bpmn:incoming>
             <bpmn:outgoing>Flow_Backorder_Notify</bpmn:outgoing>
         </bpmn:serviceTask>
 
         <bpmn:sendTask id="Activity_NotifyBackorder" name="Notify Customer - Backorder">
+            <bpmn:documentation>
+                Sends backorder notification email to customer with item details, expected availability
+                date, and options to wait, substitute, or cancel. Includes link to track backorder status.
+                Offers promotion code as goodwill gesture for the inconvenience.
+            </bpmn:documentation>
             <bpmn:incoming>Flow_Backorder_Notify</bpmn:incoming>
             <bpmn:outgoing>Flow_Backorder_End</bpmn:outgoing>
         </bpmn:sendTask>
@@ -87,8 +113,14 @@
             <bpmn:messageEventDefinition id="MessageEventDef_Backorder" messageRef="Message_Backorder"/>
         </bpmn:endEvent>
 
-        <!-- ============ PAYMENT PHASE ============ -->
+        <!-- Phase 4: Payment Processing -->
         <bpmn:serviceTask id="Activity_ProcessPayment" name="Process Payment">
+            <bpmn:documentation>
+                Submits payment authorization request to payment gateway. Processes credit card, PayPal,
+                or stored payment method based on customer selection. Handles 3D Secure verification if
+                required. Captures authorization code and stores transaction reference for reconciliation.
+                Timeout: 30 seconds with automatic retry on network failure.
+            </bpmn:documentation>
             <bpmn:incoming>Flow_InStock</bpmn:incoming>
             <bpmn:outgoing>Flow_Payment_Gateway</bpmn:outgoing>
         </bpmn:serviceTask>
@@ -101,6 +133,12 @@
 
         <!-- Payment Failed Path -->
         <bpmn:sendTask id="Activity_NotifyPaymentFailed" name="Notify Customer - Payment Failed">
+            <bpmn:documentation>
+                Sends payment failure notification email to customer. Includes reason for decline
+                (insufficient funds, expired card, fraud alert) without exposing sensitive details.
+                Provides link to update payment method and retry. Order is held for 48 hours
+                before automatic cancellation.
+            </bpmn:documentation>
             <bpmn:incoming>Flow_PaymentFailed</bpmn:incoming>
             <bpmn:outgoing>Flow_PaymentFailed_End</bpmn:outgoing>
         </bpmn:sendTask>
@@ -110,13 +148,24 @@
             <bpmn:errorEventDefinition id="ErrorEventDef_Payment" errorRef="Error_PaymentFailed"/>
         </bpmn:endEvent>
 
-        <!-- ============ FULFILLMENT PHASE ============ -->
+        <!-- Phase 5: Fulfillment -->
         <bpmn:serviceTask id="Activity_ShipOrder" name="Ship Order">
+            <bpmn:documentation>
+                Initiates order fulfillment by creating pick list and packing instructions. Generates
+                shipping label with selected carrier (FedEx, UPS, USPS based on delivery preference).
+                Updates inventory allocation from reserved to shipped. Records tracking number and
+                estimated delivery date in order management system.
+            </bpmn:documentation>
             <bpmn:incoming>Flow_PaymentSuccess</bpmn:incoming>
             <bpmn:outgoing>Flow_Ship_Notify</bpmn:outgoing>
         </bpmn:serviceTask>
 
         <bpmn:sendTask id="Activity_NotifyShipped" name="Notify Customer - Shipped">
+            <bpmn:documentation>
+                Sends shipping confirmation email with tracking number and direct link to carrier
+                tracking page. Includes itemized packing list, estimated delivery date, and delivery
+                instructions provided by customer. Triggers SMS notification if customer opted in.
+            </bpmn:documentation>
             <bpmn:incoming>Flow_Ship_Notify</bpmn:incoming>
             <bpmn:outgoing>Flow_Shipped_End</bpmn:outgoing>
         </bpmn:sendTask>
