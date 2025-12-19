@@ -1,0 +1,87 @@
+# Chick-fil-A Brand Configuration
+# Based on Visual Identity Standards Overview (August 2021)
+# Colors from page 15 - Primary, Secondary, and Tertiary palettes
+
+brand:
+  name: Chick-fil-A
+
+colors:
+  # Primary palette - Iconic Red and White
+  primary: "DD0031"      # Chick-fil-A Red (PMS 186 C)
+  secondary: "004F71"    # Deep Blue (PMS 3025 C) - for contrast
+  accent: "E35205"       # Orange (PMS 166 C) - tertiary accent
+  background: "FFFFFF"   # White
+
+  # Text colors
+  text_primary: "5B6770"   # CFA Gray (PMS 431 C) - for readability
+  text_secondary: "AF272F" # Dark Red (PMS 1805 C) - secondary emphasis
+
+  # Process element colors - Coordinated with CFA brand
+  task_fill: "F8C1B8"        # Light coral/peach (PMS 2337 C)
+  task_border: "DD0031"      # Chick-fil-A Red
+  decision_fill: "FFB549"    # Warm gold (PMS 1365 C)
+  decision_border: "E35205"  # Orange (PMS 166 C)
+  parallel_fill: "3EB1C8"    # Cyan/Teal (PMS 631 C)
+  parallel_border: "004F71"  # Deep Blue (PMS 3025 C)
+  start_fill: "249E6B"       # Green (PMS 2417 C)
+  start_border: "00635B"     # Deep Teal (PMS 7720 C)
+  end_fill: "DD0031"         # Chick-fil-A Red
+  end_border: "AF272F"       # Dark Red (PMS 1805 C)
+  subprocess_fill: "F5E3CC"  # Cream (PMS 9201 C)
+  subprocess_border: "5B6770" # Gray (PMS 431 C)
+  merge_fill: "F5E1A4"       # Light Gold (PMS 7401 C)
+  merge_border: "5B6770"     # Gray (PMS 431 C)
+
+fonts:
+  # CFA uses Apercu Std and PMN Caecilia, but Calibri as fallback
+  # if branded fonts are not available
+  title: "Calibri Light"
+  heading: "Calibri"
+  body: "Calibri"
+  sizes:
+    slide_title: 28
+    action_title: 16
+    phase_label: 14
+    shape_text: 10
+    footnote: 8
+
+layout:
+  # Slide dimensions (16:9)
+  slide_width: 13.333
+  slide_height: 7.5
+
+  # Margins (inches) - clean and uncluttered per CFA standards
+  margin_left: 0.5
+  margin_right: 0.5
+  margin_top: 0.75
+  margin_bottom: 0.5
+
+  # Shape dimensions (inches)
+  shape_width: 1.4
+  shape_height: 0.6
+  shape_gap_h: 0.3
+  shape_gap_v: 0.7
+
+# CFA Color Reference (from Visual Identity Standards page 15):
+#
+# PRIMARY PALETTE:
+#   Chick-fil-A Red: PMS 186 C, #DD0031, RGB 221,0,51
+#   White: #FFFFFF
+#
+# SECONDARY PALETTE:
+#   PMS 1805 C: #AF272F (Dark Red)
+#   PMS 3025 C: #004F71 (Deep Blue)
+#   PMS 631 C:  #3EB1C8 (Cyan/Teal)
+#   PMS 431 C:  #5B6770 (Gray)
+#
+# TERTIARY PALETTE:
+#   PMS 1365 C: #FFB549 (Golden Yellow)
+#   PMS 7401 C: #F5E1A4 (Light Gold)
+#   PMS 7720 C: #00635B (Deep Teal)
+#   PMS 2417 C: #249E6B (Green)
+#   PMS 7659 C: #5D3754 (Purple)
+#   PMS 682 C:  #994878 (Magenta)
+#   PMS 166 C:  #E35205 (Orange)
+#   PMS 2023 C: #FA9370 (Coral)
+#   PMS 2337 C: #F8C1B8 (Light Coral)
+#   PMS 9201 C: #F5E3CC (Cream)
