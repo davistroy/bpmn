@@ -21,7 +21,7 @@
     id="Definitions_[PROCESS_ID]"
     targetNamespace="http://bpmn.io/schema/bpmn"
     exporter="Claude BPMN Generator"
-    exporterVersion="1.0">
+    exporterVersion="1.1">
 
     <!--
     ============================================================================

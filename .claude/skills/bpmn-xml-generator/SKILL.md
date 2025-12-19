@@ -81,9 +81,10 @@ Process questions in this specific order:
 - Single process vs. collaboration (multiple pools)
 - Lanes/roles within pools
 
-#### Phase 3: Activities (Questions 6-10)
+#### Phase 3: Activities (Questions 6-11)
 - Main activities/tasks identification
 - Task types for each activity
+- **Task descriptions/documentation** (CRITICAL for PowerPoint generation)
 - Task sequencing and dependencies
 - Subprocess candidates
 
@@ -133,6 +134,44 @@ Map description keywords to BPMN task types:
 | "call external process", "invoke subprocess" | Call Activity | `<bpmn:callActivity>` |
 | Generic activity with no specific type | Task | `<bpmn:task>` |
 
+### Task Documentation (CRITICAL)
+
+**Every task MUST include a `<bpmn:documentation>` element** with a detailed description. This is essential for:
+- PowerPoint presentation generation (Level 3 bullet points)
+- Process documentation and training materials
+- Audit and compliance documentation
+
+**Documentation Template:**
+```xml
+<bpmn:userTask id="Activity_ReviewApplication" name="Review Application">
+    <bpmn:documentation>
+        Reviewer examines the submitted application for completeness and accuracy.
+        Verifies all required documents are attached and applicant information matches
+        supporting documentation. Marks application as approved, rejected, or requires
+        additional information. Average completion time: 15 minutes.
+    </bpmn:documentation>
+    <bpmn:incoming>Flow_1</bpmn:incoming>
+    <bpmn:outgoing>Flow_2</bpmn:outgoing>
+</bpmn:userTask>
+```
+
+**What to include in documentation:**
+1. **Purpose**: What does this task accomplish?
+2. **Actions**: What specific steps or actions are performed?
+3. **Actor/System**: Who or what performs this task?
+4. **Inputs**: What data or documents are needed?
+5. **Outputs**: What is produced or changed?
+6. **Criteria**: How do you know when it's complete?
+
+**Inferring documentation from context:**
+When the user provides a process description, extract and expand details for each task:
+
+| User Input | Generated Documentation |
+|------------|------------------------|
+| "validate order" | "System validates order details including product availability, pricing accuracy, and customer information. Checks for duplicate orders and verifies shipping address is within serviceable region. Returns validation status with any error codes." |
+| "manager approves" | "Manager reviews the request and supporting documentation. Evaluates against budget constraints and policy requirements. Provides approval, rejection, or requests additional information with justification." |
+| "send notification" | "System sends automated email notification to relevant stakeholders. Includes summary of completed action, any required next steps, and links to detailed information. Logs notification delivery status." |
+
 ### Gateway Selection
 
 | Decision Pattern | Gateway Type | XML Element | Symbol |
@@ -180,6 +219,69 @@ Map description keywords to BPMN task types:
 | Task | Handle message | Message (can be non-interrupting) |
 | Subprocess | Handle escalation | Escalation (can be non-interrupting) |
 
+## Phase Comments for Hierarchy (CRITICAL for PowerPoint)
+
+**Always include phase comments in the generated BPMN XML** to enable automatic phase detection for PowerPoint presentations. The BPMN-to-PPTX skill uses these comments to create the 3-tier hierarchy:
+- **Level 1 (Chevrons)**: Phases from comments
+- **Level 2 (White boxes)**: Task groups within each phase
+- **Level 3 (Gray boxes)**: Individual tasks with bullet point details
+
+### Phase Comment Format
+
+Insert comments immediately before each phase's first element:
+
+```xml
+<bpmn:process id="Process_Example" name="Example Process" isExecutable="true">
+
+    <!-- Phase 1: Intake and Validation -->
+    <bpmn:startEvent id="StartEvent_1" name="Request Received">
+        ...
+    </bpmn:startEvent>
+
+    <bpmn:userTask id="Activity_Review" name="Review Request">
+        <bpmn:documentation>...</bpmn:documentation>
+        ...
+    </bpmn:userTask>
+
+    <!-- Phase 2: Processing -->
+    <bpmn:serviceTask id="Activity_Process" name="Process Request">
+        <bpmn:documentation>...</bpmn:documentation>
+        ...
+    </bpmn:serviceTask>
+
+    <!-- Phase 3: Fulfillment -->
+    <bpmn:userTask id="Activity_Fulfill" name="Fulfill Request">
+        <bpmn:documentation>...</bpmn:documentation>
+        ...
+    </bpmn:userTask>
+
+    <bpmn:endEvent id="EndEvent_1" name="Complete">
+        ...
+    </bpmn:endEvent>
+
+</bpmn:process>
+```
+
+### Phase Naming Guidelines
+
+| Phase Type | Example Names |
+|------------|---------------|
+| Initial intake | "Intake", "Request Intake", "Initial Review" |
+| Validation | "Validation", "Verification", "Assessment" |
+| Processing | "Processing", "Core Processing", "Execution" |
+| Decision/Review | "Review", "Approval", "Decision Point" |
+| Fulfillment | "Fulfillment", "Completion", "Delivery" |
+| Exception handling | "Exception Handling", "Error Recovery" |
+
+### Determining Phase Boundaries
+
+Group tasks into phases based on:
+1. **Logical grouping**: Tasks that serve a common purpose
+2. **Natural breakpoints**: Before/after major decisions or parallel flows
+3. **Actor changes**: When responsibility shifts between roles
+4. **State transitions**: When the process entity changes state
+5. **Target size**: Aim for 3-6 tasks per phase for readability
+
 ## XML Generation Rules
 
 ### Required Structure
@@ -197,7 +299,7 @@ Every generated BPMN file MUST include:
     id="Definitions_[unique-id]"
     targetNamespace="http://bpmn.io/schema/bpmn"
     exporter="Claude BPMN Generator"
-    exporterVersion="1.0">
+    exporterVersion="1.1">
 
     <!-- Process definition goes here -->
 

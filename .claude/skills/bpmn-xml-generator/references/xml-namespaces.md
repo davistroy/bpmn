@@ -21,7 +21,7 @@ Every BPMN 2.0 XML file must declare these namespaces in the root `<definitions>
     id="Definitions_1"
     targetNamespace="http://bpmn.io/schema/bpmn"
     exporter="Claude BPMN Generator"
-    exporterVersion="1.0">
+    exporterVersion="1.1">
 ```
 
 ---
@@ -176,7 +176,7 @@ The `<definitions>` element requires these attributes:
 | `id` | Yes | Unique identifier | `Definitions_OrderProcess` |
 | `targetNamespace` | Yes | Process namespace | `http://bpmn.io/schema/bpmn` |
 | `exporter` | No | Tool that created file | `Claude BPMN Generator` |
-| `exporterVersion` | No | Tool version | `1.0` |
+| `exporterVersion` | No | Tool version | `1.1` |
 | `expressionLanguage` | No | Default expression language | `http://www.w3.org/1999/XPath` |
 | `typeLanguage` | No | Default type language | `http://www.w3.org/2001/XMLSchema` |
 
@@ -235,7 +235,7 @@ Here's a complete namespace declaration template:
     id="Definitions_[UNIQUE_ID]"
     targetNamespace="http://bpmn.io/schema/bpmn"
     exporter="Claude BPMN Generator"
-    exporterVersion="1.0">
+    exporterVersion="1.1">
 
     <!-- Process definitions -->
     <bpmn:process id="Process_[ID]" name="[Process Name]" isExecutable="true">
