@@ -1,0 +1,50 @@
+{
+  "name": "CFA Institute",
+  "colors": {
+    "primary": "060058",
+    "secondary": "302B6A",
+    "accent": "716D9E",
+    "background": "FFFFFF",
+    "text_primary": "1A1A2E",
+    "text_secondary": "4A4A6A",
+
+    "task_fill": "E8E7F0",
+    "task_border": "302B6A",
+    "decision_fill": "F0EFF5",
+    "decision_border": "716D9E",
+    "parallel_fill": "E0DFF0",
+    "parallel_border": "060058",
+    "start_fill": "D4EDDA",
+    "start_border": "28A745",
+    "end_fill": "F8D7DA",
+    "end_border": "DC3545",
+    "subprocess_fill": "F8F8FA",
+    "subprocess_border": "6C6C8A",
+    "merge_fill": "E9E9F0",
+    "merge_border": "6C6C8A"
+  },
+  "fonts": {
+    "title": "Georgia",
+    "heading": "Arial",
+    "body": "Arial",
+    "sizes": {
+      "slide_title": 28,
+      "action_title": 16,
+      "phase_label": 14,
+      "shape_text": 10,
+      "footnote": 8
+    }
+  },
+  "layout": {
+    "slide_width": 13.333,
+    "slide_height": 7.5,
+    "margin_left": 0.5,
+    "margin_right": 0.5,
+    "margin_top": 0.75,
+    "margin_bottom": 0.5,
+    "shape_width": 1.4,
+    "shape_height": 0.6,
+    "shape_gap_h": 0.3,
+    "shape_gap_v": 0.7
+  }
+}

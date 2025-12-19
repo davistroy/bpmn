@@ -1,0 +1,50 @@
+{
+  "name": "Stratfield Consulting",
+  "colors": {
+    "primary": "0D2137",
+    "secondary": "1E4976",
+    "accent": "D4A84B",
+    "background": "FFFFFF",
+    "text_primary": "1A202C",
+    "text_secondary": "4A5568",
+
+    "task_fill": "E8F4FC",
+    "task_border": "1E4976",
+    "decision_fill": "FDF6E3",
+    "decision_border": "D4A84B",
+    "parallel_fill": "F0E6F6",
+    "parallel_border": "6B4C7A",
+    "start_fill": "D4EDDA",
+    "start_border": "28A745",
+    "end_fill": "F8D7DA",
+    "end_border": "DC3545",
+    "subprocess_fill": "F8F9FA",
+    "subprocess_border": "6C757D",
+    "merge_fill": "E9ECEF",
+    "merge_border": "6C757D"
+  },
+  "fonts": {
+    "title": "Avenir",
+    "heading": "Avenir",
+    "body": "Avenir",
+    "sizes": {
+      "slide_title": 28,
+      "action_title": 16,
+      "phase_label": 14,
+      "shape_text": 10,
+      "footnote": 8
+    }
+  },
+  "layout": {
+    "slide_width": 13.333,
+    "slide_height": 7.5,
+    "margin_left": 0.6,
+    "margin_right": 0.6,
+    "margin_top": 0.75,
+    "margin_bottom": 0.5,
+    "shape_width": 1.4,
+    "shape_height": 0.6,
+    "shape_gap_h": 0.35,
+    "shape_gap_v": 0.7
+  }
+}
